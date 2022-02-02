@@ -1,0 +1,10 @@
+{
+    "name" : "Apple",
+    "health" : 12,
+    "attack" : 0,
+    "defense" : 0,
+    "power" : 0,
+    "description" : "A slightly bruised apple",
+    "value" : 5,
+    "sort" : "usable"
+}

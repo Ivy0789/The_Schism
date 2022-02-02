@@ -1,0 +1,10 @@
+{
+    "name":"Light of Elune",
+    "health" : 0,
+    "attack" : 0,
+    "defense" : 1,
+    "power" : 2,
+    "description" : "May it be a light for you in dark places, where all other lights go out.",
+    "value" : 150,
+    "sort" : "usable"
+}

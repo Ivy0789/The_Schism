@@ -1,0 +1,8 @@
+{
+  "name":"The Chapel" ,
+  "description": "\n\nYou enter a large Chapel. Icons line the walls.\n\nA trail of blood leads you to a pillar, where you find a man, long dead, enshrined in golden armor.",
+  "connections": {"w": 12, "e":11},
+  "enemy": 0,
+  "item": ["Ornate Greaves"],
+  "instruction": "\n\nThere is a door to the East, and another to the West.\n"
+}

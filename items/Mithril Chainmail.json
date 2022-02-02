@@ -1,0 +1,10 @@
+{
+    "name" : "Mithril Chainmail",
+    "health" : 0,
+    "attack" : 0,
+    "defense" : 5,
+    "power" : 1,
+    "description" : "As light as a feather, and as hard as dragon scales.",
+    "value" : 150,
+    "sort" : "equipable"
+}

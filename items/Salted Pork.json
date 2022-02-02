@@ -1,0 +1,10 @@
+{
+    "name" : "Salted Pork",
+    "health" : 0,
+    "attack" : 1,
+    "defense" : 1,
+    "power" : 0,
+    "description" : "You hear this is particularly good",
+    "value" : 5,
+    "sort" : "usable"
+}

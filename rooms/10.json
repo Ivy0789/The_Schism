@@ -1,0 +1,8 @@
+{
+  "name":"The Schism" ,
+  "description": "\n\nYou shoot out of the dark passage, visages of spiders haunting your step. \n\nThe air sounds dark around you, yet a dim blue-white light is emanating from a great crevasse ahead. \nA strange humming rings in your ears interspersed with loud cracks, as though lightning itself is being restrained...",
+  "connections": {"s":8},
+  "enemy": 1,
+  "item":["Orb of Con-Creet"],
+  "instruction":"\n\nA shadow shifts, and an evil laugh echos from the shadows ahead. \n\nAre you prepared? Dare you approach?\n"
+}

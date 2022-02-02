@@ -1,0 +1,10 @@
+{
+    "name" : "Bucket of Water",
+    "health" : 0,
+    "attack" : -2,
+    "defense" : -1,
+    "power" : 0,
+    "description" : "Cumbersome, but perhaps it will prove useful.",
+    "value" : 2,
+    "sort" : "usable"
+}

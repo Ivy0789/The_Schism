@@ -1,0 +1,10 @@
+{
+    "name" : "Sword",
+    "health" : 0,
+    "attack" : 5,
+    "defense" : 0,
+    "power" : 0,
+    "description" : "A sturdy short sword.",
+    "value" : 25,
+    "sort" : "equipable"
+}

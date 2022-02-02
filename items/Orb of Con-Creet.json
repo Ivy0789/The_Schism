@@ -1,0 +1,10 @@
+{
+    "name" : "Orb of Con-Creet",
+    "health" : 25,
+    "attack" : 2,
+    "defense" : 2,
+    "power" : 4,
+    "description" : "The mighty Orb of Con-Creet! Legends say its power is paralleled...",
+    "value" : 1000,
+    "sort" : "usable"
+}

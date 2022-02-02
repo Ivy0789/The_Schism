@@ -1,0 +1,10 @@
+{
+    "name" : "Ornate Greaves",
+    "health" : 0,
+    "attack" : 0,
+    "defense" : 2,
+    "power" : 0,
+    "description" : "A pair of exquisite greaves, inlay with gold and silver thread.",
+    "value" : 50,
+    "sort" : "equipable"
+}

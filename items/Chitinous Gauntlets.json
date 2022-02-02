@@ -1,0 +1,10 @@
+{
+    "name" : "Chitinous Gauntlets",
+    "health" : 0,
+    "attack" : 0,
+    "defense" : 3,
+    "power" : 1,
+    "description" : "Black, unsettling gauntlets of chitin and silk.",
+    "value" : 100,
+    "sort" : "equipable"
+}
