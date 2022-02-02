@@ -6,13 +6,11 @@ import math
 
 from colorama import Fore, Back, Style
 from char import Hero
-from char import Enemy
 from char import generate
 from core import call_ascii
 from core import call_audio
 from core import clear
 from core import type_print
-from item import Bag
 from pygame import mixer as mix
 from random import choice
 from random import choices
@@ -129,7 +127,7 @@ class Combat(cmd.Cmd):
             exp = round(((randint(350, 600) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100)
                         if self.enemy.name in self.enemy_list else
                         ((randint(550, 800) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100
-            ))
+                         ))
             sleep(.2)
             self.player.exp += exp
             if self.player.exp > 1000:
@@ -283,5 +281,3 @@ class Combat(cmd.Cmd):
         """ Use an item! """
         self.player.use(self.bag.show())
         self.damage(self.enemy, self.player, 100)
-
-
