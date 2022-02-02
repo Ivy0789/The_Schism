@@ -164,7 +164,7 @@ class Combat(cmd.Cmd):
         """
         This method exists to reduce repetitious code. It simply places the player first in the move order.
         Args:
-            power:
+            power: the power of the used move
         """
         type_print(f"\n\t{choice(self.txt['player'])}\n")
         self.damage(self.player, self.enemy, power)
