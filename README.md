@@ -2,7 +2,7 @@
 
  Greetings! Welcome to my game, which I wrote to solidify  my
  understanding of Python. This file is a work in process, but each module will eventually have basic documentation here.
-Until then, placeholders will have to do!
+Until then, placeholders will have to do! 
 
 
  ## Game Engine
