@@ -1,3 +1,11 @@
+# Requirements
+
+see requirements.txt
+
+To install requirements, use
+
+>pip install -r requirements.txt
+
 # The_Schism
 
  Greetings! Welcome to my game, which I wrote to solidify  my

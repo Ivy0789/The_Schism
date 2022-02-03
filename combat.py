@@ -25,9 +25,9 @@ class Combat(cmd.Cmd):
     prompt = f'\n\t\t{Fore.RED}       You are in Combat!\n' \
              f'\n\t\t{Fore.GREEN}|  Attack  |  Item  |  Run  |{Fore.YELLOW}\n\n\t\t\t'
 
-    def __init__(self, bag, loc=None, *args, **kwargs):
+    def __init__(self, bag, loc=None, boss=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.enemy = generate(self.player)
+        self.enemy = generate(self.player, boss)
         self.loc = loc
         self.bag = bag
         clear()
@@ -39,17 +39,20 @@ class Combat(cmd.Cmd):
                 f"A frenzied {self.enemy.name} appeared!",
                 f"A terrifying {self.enemy.name} approaches!",
                 f"{self.player.name} found a ferocious {self.enemy.name}!",
-                f"Gah! A felicitous {self.enemy.name} rushes toward {self.player.name}!"
+                f"Gah! A infelicitous {self.enemy.name} rushes toward {self.player.name}!"
+                f"Oh no! A {self.enemy.name} rushes towards you!"
             ],
             'player': [
                 f"{self.player.name} attacks!",
                 f"{self.player.name} charges the enemy!",
                 f"{self.player.name} lunges forward!"
+                f"{self.player.name} rushes forward!"
             ],
             'enemy': [
                 f"The {self.enemy.name} attacks!",
                 f"The {self.enemy.name} charges forward, enraged!",
                 f"The {self.enemy.name} lashes out!"
+                f"The {self.enemy.name} angrily attacks!"
             ],
             'win': [
                 f"{self.player.name} defeated the {self.enemy.name}!",

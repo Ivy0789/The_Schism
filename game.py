@@ -190,12 +190,15 @@ class Engine(cmd.Cmd):
         """ To Battle! """
         if self.location.enemy is True and self.location.id not in self.room_enemy_check:
             clear()
-            pygame.mixer.fadeout(1000)  # play battle intro music
+            pygame.mixer.fadeout(1000)  # todo play battle intro music
             type_print('\n\n\tYou sense something is watching you and call out a challenge...'
                        '\n\n\tSuddenly you hear an ominous swirling and feel the air crackle!\n')
             sleep(1.4)
             self.room_enemy_check.append(self.location.id)
-            return Combat(bag=self.bag, loc=self.location).cmdloop() and False
+            if self.location.id != 10:
+                return Combat(bag=self.bag, loc=self.location, boss=False).cmdloop() and False  # triggers random enemy
+            else:
+                return Combat(bag=self.bag, loc=self.location, boss=True).cmdloop() and False  # triggers boss
         else:
             type_print(f'\n\t\t{Fore.RED}There is no battle here!{Fore.YELLOW}\n')
 
