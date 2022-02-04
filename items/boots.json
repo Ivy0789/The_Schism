@@ -2,7 +2,7 @@
     "name" : "Boots",
     "health" : 0,
     "attack" : 0,
-    "defense" : 2,
+    "defense" : 1,
     "power" : 0,
     "description":"A pair of well polished boots.",
     "value" : 20,

@@ -1,8 +1,8 @@
 {
   "name":"The Rookery" ,
-  "description": "\n\n\tYou enter a Rookery. Small bones are piled on the floor with not a bird in sight.",
+  "description": "You enter a Rookery. Small bones are piled on the floor with not a bird in sight.",
   "connections":{"e":12, "n":6},
   "enemy": 1,
   "item": ["Feather", "Potion"],
-  "instruction": "\n\n\tTo the East lies a dark passage. To the North is a door inscribed with ornate runes. \n\n\tThey crackle with a mysterious energy.\n"
+  "instruction": "East is the dark passage. North lies a door inscribed with ornate runes, crackling with mysterious energy."
 }

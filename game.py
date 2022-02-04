@@ -3,7 +3,7 @@ This defines the game engine where the room, inventory, and combat systems are a
 """
 import cmd
 import pygame.mixer
-
+import tabulate
 from colorama import Fore
 from combat import Combat
 from core import clear, type_print
@@ -12,13 +12,22 @@ from random import randint
 from room import get_room
 from time import sleep
 
+tabulate.PRESERVE_WHITESPACE = True
+
 
 class Engine(cmd.Cmd):
     prompt = f'\n\n\tEnter a direction or command\n\n\t\t{Fore.RESET}'  # sets the command prompt
-    bag = Bag()  # this is also a class attribute, and is an instance of the Bag class
     room_enemy_check = []  # these are class attributes. It is unchanged and cumulative upon each class instance
     room_item_check = []   # These track game progress and halt duplicate combat and duplicate items in rooms.
     equipped = []
+
+    def __init__(self, bag=Bag(), room=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)  # initializes Engine's super class, cmd.Cmd
+        print(Fore.YELLOW)
+        self.location = get_room(room)
+        self._bag = bag
+        if self.location.id not in self.room_item_check or self.location.id not in self.room_enemy_check:
+            self.print_description()
 
     def emptyline(self) -> bool:
         """
@@ -33,14 +42,15 @@ class Engine(cmd.Cmd):
         This a hook method of Cmd that executes only once as the cmdloop is called. This enables the return from
         combat to give room context rather than a simple prompt.
          """
+        print(f'\n\n\tYou are in {self.location.name}')
         self.print_instruction()
         if self.location.id not in self.room_enemy_check and self.location.id not in self.room_item_check:
-            type_print('\n\n\tType help for command list')
+            type_print('\n\tType help for command list')
 
     def precmd(self, line: str) -> str:
         """
         This method is a hook method of Cmd that executes immediately after input entry, but before command dispatch/
-        interpretation. Here, it allows the user entry text to be white and core game txt to be yellow.
+        interpretation. Here, it ensures proper color.
         Args:
             line: the user input
 
@@ -63,13 +73,15 @@ class Engine(cmd.Cmd):
             line (str): the str of the last entered user input
         """
         header = ['help', 'status']
-        for item in self.bag.bag:
+        for item in self._bag.bag:
             if item['sort'] == 'equipable' and item['name'] not in self.equipped:
                 self.equipped.append(item['name'])
                 Combat.player.use(item)
+
         if line not in header:
-            type_print(f'\n\tYou are in {self.location.name}')
-            self.print_instruction()
+            print(f'\n\tYou are in {self.location.name}')
+            self.print_instruction(1000)
+
         if self.location.enemy is True and self.location.id not in self.room_enemy_check and line not in header:
             print(f'\n\n\t\t{Fore.RED}There is danger here.{Fore.YELLOW}')
             r = randint(1, 6)  # adds random combat element. todo use this to make combat optional at start.
@@ -81,14 +93,9 @@ class Engine(cmd.Cmd):
     def default(self, line: str) -> bool:
         """ This is a Cmd method that determines what message prints if the prompt entered does not match a command"""
         print("\n\tYou can't do that!")
+        sleep(.5)
+        clear()
         return False
-
-    def __init__(self, room=1, *args, **kwargs):
-        super().__init__(*args, **kwargs)  # initializes Engine's super class, cmd.Cmd
-        print(Fore.YELLOW)
-        self.location = get_room(room)
-        if self.location.id not in self.room_item_check or self.location.id not in self.room_enemy_check:
-            self.print_description()
 
     # enablers
     def move(self, direction):
@@ -105,15 +112,14 @@ class Engine(cmd.Cmd):
             self.location = get_room(new_room)
             if self.location.id not in self.room_enemy_check or self.location.id not in self.room_item_check:
                 self.print_description()
-            self.print_instruction()
 
-    def print_description(self):
+    def print_description(self, speed=250):
         sleep(.2)
-        type_print(f'\t{self.location.description}')
+        type_print(f'\t{self.location.description}', speed)
 
-    def print_instruction(self):
+    def print_instruction(self, speed=250):
         sleep(.2)
-        type_print(f'\t{self.location.instruction}')
+        type_print(f'\t{self.location.instruction}', speed)
 
     # do_ cmds - the name of each method sets the in-game command name.
     # directionals
@@ -140,7 +146,6 @@ class Engine(cmd.Cmd):
             f"\n\tGame Commands:\n"
             f"\t\t{'fight'.ljust(8)} - Summon a fight, if you can!\n"
             f"\t\t{'bag'.ljust(8)} - Look in your bag or use an item!\n"
-            f"\t\t{'look'.ljust(8)} - Look around you for doors!\n"
             f"\t\t{'search'.ljust(8)} - Look around for items!\n"
             f"\t\t{'status'.ljust(8)} - See your current health, attack, defense, and level!\n"
             f"\t\t{'quit'.ljust(8)} - Quit the game!\n"
@@ -148,7 +153,7 @@ class Engine(cmd.Cmd):
             f"\t\t{'north'.ljust(8)} - Move north, if possible\n"
             f"\t\t{'east'.ljust(8)} - Move east, if possible\n"
             f"\t\t{'south'.ljust(8)} - Move south, if possible\n"
-            f"\t\t{'west'.ljust(8)} - Move west, if possible\n"
+            f"\t\t{'west'.ljust(8)} - Move west, if possible"
         )
 
     @staticmethod
@@ -159,20 +164,22 @@ class Engine(cmd.Cmd):
     def do_search(self, *_):
         """ Search for an item """
         clear()
-        type_print("\n\n\t......\n\n\t", 50)
-        sleep(1.3)
+        type_print("\n\n\t......", 50)
+        sleep(1)
         if self.location.id in self.room_item_check:
             type_print('\n\n\tYou already did that!\n')
+            sleep(.5)
+            clear()
         if self.location.id not in self.room_item_check:
             type_print(
-                f"\n\n\tYou found {Fore.GREEN}"
-                f"""{f'{Fore.YELLOW} and {Fore.GREEN}'.join(self.location.item)
+                f"\tYou found {Fore.LIGHTGREEN_EX}"
+                f"""{f'{Fore.YELLOW} and {Fore.LIGHTGREEN_EX}'.join(self.location.item)
                 if len(self.location.item) > 1 else ''.join(self.location.item)
                 if len(self.location.item) == 1 else 'nothing'
-                }!\n{Fore.YELLOW}"""
+                }!{Fore.YELLOW}"""
             )
             self.room_item_check.append(self.location.id)
-            self.bag.check(self.location.item)
+            self._bag.check(self.location.item)
 
     @staticmethod
     def do_status(*_):
@@ -185,28 +192,46 @@ class Engine(cmd.Cmd):
             clear()
             pygame.mixer.fadeout(1000)  # todo play battle intro music
             type_print('\n\n\tYou sense something is watching you and call out a challenge...'
-                       '\n\n\tSuddenly you hear an ominous swirling and feel the air crackle!\n')
+                       '\n\n\tSuddenly you hear an ominous swirling and feel the air crackle!')
             sleep(1.4)
             self.room_enemy_check.append(self.location.id)
             if self.location.id != 10:
-                return Combat(bag=self.bag, loc=self.location, boss=False).cmdloop() and False  # triggers random enemy
+                return Combat(bag=self._bag, loc=self.location, boss=False).cmdloop() and False  # triggers random enemy
             else:
-                return Combat(bag=self.bag, loc=self.location, boss=True).cmdloop() and False  # triggers boss
+                return Combat(bag=self._bag, loc=self.location, boss=True).cmdloop() and False  # triggers boss
         else:
             type_print(f'\n\t\t{Fore.RED}There is no battle here!{Fore.YELLOW}\n')
+            clear()
 
     def do_bag(self, *_):
         """ See your Bag or use and Item """
         ent = ""
-        type_print(f'{Fore.GREEN}\n\t\t  See  or  Use?\n\n{Fore.YELLOW}')
-        while ent.lower() != 'see' or ent.lower() != "use":
-            ent = input('\t\t\t')
-            if ent.lower() == 'see':
-                type_print(f"\n\tYou have:\n\t\t  ")
-                for name, count in self.bag.__index__():
-                    print(f"\n\t\t| {Fore.GREEN}{name} {Fore.YELLOW}--{Fore.GREEN} {count}{Fore.YELLOW}", end='\n\t\t')
-                print('\n\n\t')
+        print(f"\t\t{self.blue('See or Use?')}")
+        while ent != 'see' or ent != "use":
+            ent = input('\n\t\t')
+            ent = ent.lower()
+            if ent == 'see':
+                clear()
+                type_print(f"\tYou have:\n")
+                head = ["Item Name", "Quantity", "Description", "Value\n\t"]
+                joined = []
+                for name, count in self._bag.__index__():
+                    for item in self._bag.bag:
+                        if item['name'] == name:
+                            joined.append(['\t', self.blue(name), self.blue(count),
+                                           self.yellow(item['description']), self.yellow(item['value'])])
+                print('\t' + tabulate.tabulate(joined, headers=head, numalign="center",
+                                               stralign="center", tablefmt='plain'))
                 break
-            if ent.lower() == 'use':
-                Combat.player.use(self.bag.show())
+            if ent == 'use':
+                clear()
+                Combat.player.use(self._bag.show_usable())
                 break
+
+    @staticmethod
+    def blue(txt):
+        return f"{Fore.LIGHTBLUE_EX}{txt}{Fore.YELLOW}"
+
+    @staticmethod
+    def yellow(txt):
+        return f"{Fore.LIGHTYELLOW_EX}{txt}{Fore.YELLOW}"

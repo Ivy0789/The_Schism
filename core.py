@@ -38,12 +38,13 @@ def call_audio(file, loop=-1):
     audio.play(loops=loop)
 
 
-def type_print(text: str, speed: int = 1500) -> print:
+def type_print(text: str, speed: int = 250) -> print:
     """
     Slow typing function
     :param text: "what you want to print out'
     :param speed: integer of words per minute
     """
+    print("\n\n\t\t")
     for letter in text:
         st.writelines(letter)
         st.flush()

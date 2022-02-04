@@ -3,6 +3,7 @@ This file defines game combat
 """
 import cmd
 import math
+import time
 
 from colorama import Fore, Back, Style
 from char import Hero
@@ -15,43 +16,50 @@ from pygame import mixer as mix
 from random import choice
 from random import choices
 from random import randint
-from time import sleep
 
 
 class Combat(cmd.Cmd):
     enemy_list = ['Goblin', 'Imp']
-    player = Hero('placeholder', 100, 10, 10, 1, 0)
+    last = 0
+    player = Hero(name="",
+                  health=100,
+                  maxhp=100,
+                  attack=10,
+                  defense=10,
+                  level=1,
+                  exp=0,
+                  )
 
     prompt = f'\n\t\t{Fore.RED}       You are in Combat!\n' \
-             f'\n\t\t{Fore.GREEN}|  Attack  |  Item  |  Run  |{Fore.YELLOW}\n\n\t\t\t'
+             f'\n\t\t{Fore.GREEN}|  Attack  |  Item  |  Run  |{Fore.YELLOW}\n\n\t\t'
 
     def __init__(self, bag, loc=None, boss=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.enemy = generate(self.player, boss)
         self.loc = loc
-        self.bag = bag
+        self._bag = bag
         clear()
         print(Fore.RED), call_ascii(self.enemy.name), print(Fore.YELLOW)
         call_audio('battle')
-        sleep(1.5)
+        time.sleep(1.5)
         self.txt = {
             'intro': [
                 f"A frenzied {self.enemy.name} appeared!",
                 f"A terrifying {self.enemy.name} approaches!",
                 f"{self.player.name} found a ferocious {self.enemy.name}!",
-                f"Gah! A infelicitous {self.enemy.name} rushes toward {self.player.name}!"
+                f"Gah! An infelicitous {self.enemy.name} rushes toward {self.player.name}!",
                 f"Oh no! A {self.enemy.name} rushes towards you!"
             ],
             'player': [
                 f"{self.player.name} attacks!",
                 f"{self.player.name} charges the enemy!",
-                f"{self.player.name} lunges forward!"
+                f"{self.player.name} lunges forward!",
                 f"{self.player.name} rushes forward!"
             ],
             'enemy': [
                 f"The {self.enemy.name} attacks!",
                 f"The {self.enemy.name} charges forward, enraged!",
-                f"The {self.enemy.name} lashes out!"
+                f"The {self.enemy.name} lashes out!",
                 f"The {self.enemy.name} angrily attacks!"
             ],
             'win': [
@@ -85,16 +93,16 @@ class Combat(cmd.Cmd):
                 f"{self.player.name} uses PLACEHOLDER"
             ],
             'hit': [
-                f"\n\tA hit! A fine hit!",
-                f"\n\tA strike!",
-                f"\n\tA solid blow!",
-                f"\n\tEpic strike!"
+                f"A hit! A fine hit!",
+                f"A strike!",
+                f"A solid blow!",
+                f"Epic strike!"
             ],
             'miss': [
-                f"\n\tGah! A miss!",
-                f"\n\tThe vicious attack hit only air!",
-                f"\n\tMiss!",
-                f"\n\tNo good!"
+                f"Gah! A miss!",
+                f"The vicious attack hit only air!",
+                f"Miss!",
+                f"No good!"
             ]
         }
 
@@ -116,33 +124,22 @@ class Combat(cmd.Cmd):
         print("Not a valid move!")
         return False
 
+    def precmd(self, line: str) -> str:
+        print(Fore.YELLOW)
+        return line
+
     def postcmd(self, stop: bool, line: str) -> bool:
-        """
-        postcmd is a hook method of Cmd that executes immediately after command dispatch
-        line is the command line (input) and stop determines if the prompt continues or not
-        The return value of this method will be used as the new value for the internal flag which corresponds to stop;
-        returning false will cause interpretation to continue.
-        """
+        """ Handles life check, exp, and exit conditions each loop """
         if not self.enemy.alive():  # checks if enemy is alive and generates exp gain
             mix.fadeout(1000)
             call_audio('win', 0)
-            type_print(f"\n\t{choice(self.txt['win'])}")
-            exp = round(((randint(350, 600) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100)
-                        if self.enemy.name in self.enemy_list else
-                        ((randint(550, 800) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100
-                         ))
-            sleep(.2)
+            type_print(f"\t{choice(self.txt['win'])}")
+            exp = self.gen_exp()
             self.player.exp += exp
-            if self.player.exp > 1000:
-                self.player.exp -= 1000
-                self.player.level += 1
-            loot = self.loot()
-            if loot:
-                type_print(f"\n\n\t\t{self.enemy.name} dropped {', '.join(loot)}!")
-                self.bag.check(loot)
-            type_print(f'\n\n\t\tYou gained {exp} points for defeating the {self.enemy.name}!'
-                       f'\n\n\t\t\t You are level: {self.player.level}'
-                       f'\n\n\t\t\tPress Enter to Return to {self.loc.name}....')
+            self.loot()
+            type_print(f'\t\tYou gained {exp} points for defeating the {self.enemy.name}!'
+                       f'\n\n\t\t You are level: {self.player.level}'
+                       f'\n\n\t\tPress Enter to Return to {self.loc.name}....')
             call_audio('interlude')
             input("\n\n\t")
             clear()
@@ -161,7 +158,7 @@ class Combat(cmd.Cmd):
         mix.fadeout(1000)
         call_audio('dungeon')
         from game import Engine
-        return Engine(room=self.loc.id).cmdloop() and False
+        return Engine(bag=self._bag, room=self.loc.id).cmdloop() and False
 
     def player_first(self, power):  # attack
         """
@@ -169,13 +166,13 @@ class Combat(cmd.Cmd):
         Args:
             power: the power of the used move
         """
-        type_print(f"\n\t{choice(self.txt['player'])}\n")
+        type_print(f"\t{choice(self.txt['player'])}")
         self.damage(self.player, self.enemy, power)
-        sleep(.8)
+        time.sleep(.8)
         if self.enemy.alive():
-            type_print(f"\n\t{choice(self.txt['enemy'])}\n")
+            type_print(f"\t{choice(self.txt['enemy'])}")
             self.damage(self.enemy, self.player, 100)
-        sleep(1.2)
+        time.sleep(1.2)
 
     def enemy_first(self, power):  # attack
         """
@@ -185,11 +182,11 @@ class Combat(cmd.Cmd):
         """
         type_print(f"\n\t{choice(self.txt['enemy'])}\n")
         self.damage(self.enemy, self.player, 100)
-        sleep(.8)
+        time.sleep(.8)
         if self.player.alive():
-            type_print(f"\n\t{choice(self.txt['player'])}\n")
+            type_print(f"\n\t{choice(self.txt['player'])}")
             self.damage(self.player, self.enemy, power)
-        sleep(1.2)
+        time.sleep(1.2)
 
     def damage(self, user, target, power=100):  # attack
         """
@@ -202,34 +199,47 @@ class Combat(cmd.Cmd):
             power: the power level of the move being used, then outputs the appropriate randomized hit or miss
             message and how much damage was done to whom by whom.
         """
-        dmg = (int(round(
-            ((((2 * user.level) / 5 + 2) * (power * (user.attack / target.defense))) / 50 + 2)
+        dmg = (round(
+            (((((2 * user.level) / 5) + 2) * (power * (user.attack / target.defense)) / 50) + 2)
             * (randint(100, 200) / 100)
-            * (randint(100, 120) / 100))) + 2)
-        hit = randint(0, 100)
-        if hit > 10:
+            * (randint(100, 120) / 100))) + 2
+        if self.rand_check() > 8:
             target.health -= dmg
         else:
             dmg = 0
-        type_print('\n\t\t....\n\t\t....\n')
-        sleep(1)
-        type_print(f"{choice(self.txt['miss'])}" if dmg <= 0 else choice(self.txt['hit']))
-        type_print(f'\n\n\t\t'
+        type_print('\t....\n\t....')
+        time.sleep(1)
+        type_print(f"\t{choice(self.txt['miss'])}" if dmg <= 0 else f"\t{choice(self.txt['hit'])}")
+        type_print(f'\t'
                    f'{user.name} dealt '
                    f'{Fore.RED}{dmg if dmg > 0 else "no"} damage{Fore.YELLOW} to '
-                   f'{target.name}!\n'
+                   f'{target.name}!'
                    )
 
-    def loot(self) -> list:
-        loot_table = ['Potion', 'Apple', 'Salted Pork', 'Sword', 'Royal Pauldrons',
+    def gen_exp(self):
+        return round(((randint(350, 600) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100)
+                     if self.enemy.name in self.enemy_list else
+                     ((randint(550, 800) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100))
+
+    def loot(self):
+        loot_table = ['Potion', 'Apple', 'Salted Pork', 'Royal Pauldrons',
                       'Tome of Power', 'Mithril Chainmail', 'Light of Elune', 'Goblin Helm']
         r = randint(1, 100)
         if r > 50:
-            if self.enemy.name == 'Goblin':
-                return choices(loot_table, weights=[30, 30, 30, 5, 1, .5, .1, .01, 25], k=1)
-            if self.enemy.name != 'Goblin':
-                return choices(loot_table, weights=[30, 30, 30, 5, 1, .5, .1, .01, 0], k=1)
+            loot = choices(loot_table, weights=[30, 30, 30, 1, 5, 1, 1, 0], k=2) if self.enemy.name != 'Goblin' \
+                else choices(loot_table, weights=[30, 30, 30, 1, 5, 0, 1, 30], k=2)
+            if loot:
+                type_print(f"\t\t{self.enemy.name} dropped {', '.join(loot)}!")
+                self._bag.check(loot)
 
+    def rand_check(self):
+        hit = randint(1, 100)
+        while hit in range(self.last - 8, self.last + 8):
+            hit = randint(1, 100)
+        self.last = hit
+        return hit
+
+    # Action Commands
     def do_help(self, arg: str):
         """ Overrides default help menu """
         print(
@@ -245,12 +255,13 @@ class Combat(cmd.Cmd):
         """ Attack your enemy using one of three options """
         moves = ['quick', 'normal', 'power']
         atk = ''
-        type_print(f'\n\t\tWhat attack?\n\n\t\t{Fore.GREEN}|  Quick  |  Normal  |  Power  |\n\n{Fore.YELLOW}')
+        clear()
+        print(f'\n\t\tWhat attack?\n\n\t\t{Fore.GREEN}|  Quick  |  Normal  |  Power  |\n\n{Fore.YELLOW}')
         while atk.lower() not in moves:
-            atk = input("\t\t\t")
+            atk = input("\t\t")
             atk.lower()
             if atk == 'quick':
-                self.player_first(80)
+                self.player_first(60)
                 break
             if atk == 'normal':
                 first = randint(1, 2)
@@ -264,23 +275,23 @@ class Combat(cmd.Cmd):
                 self.enemy_first(140)
                 break
             if not 'quick' or 'normal' or 'power':
-                type_print('\n\t\t\tThat is not a move!\n\n')
+                type_print('\t\tThat is not a move!\n\n\t\t')
 
     def do_run(self, *_):
         """ Try to run away! """
         clear()
-        type_print(f"\n\t{choice(self.txt['run'])}\n")
-        type_print('\n\t\t....\n\t\t....\n'), sleep(1)
+        type_print(f"\t{choice(self.txt['run'])}")
+        type_print('\t....\n\t....'), time.sleep(1)
         if randint(0, 100) > 30:
-            type_print(f"\n\t{choice(self.txt['success'])}")
+            type_print(f"\t{choice(self.txt['success'])}")
             type_print(f'{self.player.name} ran away!')
-            sleep(3)
+            time.sleep(3)
             self.leave_combat()
         else:
-            type_print(f"\n\t{choice(self.txt['fail'])}")
+            type_print(f"\t{choice(self.txt['fail'])}")
             self.damage(self.enemy, self.player, 100)
 
     def do_item(self, *_):
         """ Use an item! """
-        self.player.use(self.bag.show())
+        self.player.use(self._bag.show_usable())
         self.damage(self.enemy, self.player, 100)

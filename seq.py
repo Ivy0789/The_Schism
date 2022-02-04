@@ -66,12 +66,12 @@ def final_sequence():  # todo boss fight
 
 def skip_start():
     while True:
-        r = input("Enter Y to skip intro\n\t")
-        p = r.upper()
-        if p != "Y":
-            start_sequence()
-            break
-        else:
+        #r = input("Enter Y to skip intro\n\t")
+        #p = r.upper()
+        #if p != "Y":
+        #    start_sequence()
+        #    break
+        #else:
             name = input('Name: ')
             Combat.player._name = name
             clear()

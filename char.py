@@ -16,16 +16,17 @@ class Char(object):
     balance is achieved. See the readme for details on the attack formula and random enemy generator
     """
 
-    def __init__(self, name: str, health: int, attack: int, defense: int, level: int) -> None:
+    def __init__(self, name: str, health: int, maxhp: int, attack: int, defense: int, level: int) -> None:
         self._name = name
         self._health = health
+        self._maxhp = maxhp
         self._attack = attack
         self._defense = defense
         self._level = level
 
     def __str__(self):
         return (f"\n\n\t{Fore.YELLOW}{self._name}'s Status:\n\n\t|\tHealth: "
-                f"{Fore.LIGHTRED_EX if self.health < 100 else Fore.GREEN}{self.health}{Fore.YELLOW} / 100"
+                f"{Fore.LIGHTRED_EX if self.health < self.maxhp else Fore.GREEN}{self.health}{Fore.YELLOW} / {self.maxhp}"
                 f"\t|\tAttack: {self.attack}\t|\t Defense: {self.defense}"
                 f"\t|\tLevel: {self.level}\t|\t\n\n"
                 )
@@ -49,8 +50,16 @@ class Char(object):
     def health(self, delta):
         """ Sets and limits value of health by the min of max hp, max of healing sources."""
         self._health = delta
-        if self._health > 100:
-            self._health = 100
+        if self._health > self._maxhp:
+            self._health = self._maxhp
+
+    @property
+    def maxhp(self):
+        return self._maxhp
+
+    @maxhp.setter
+    def maxhp(self, delta):
+        self._maxhp = delta
 
     @property
     def attack(self) -> int:  # attack start
@@ -87,22 +96,31 @@ class Char(object):
         if self._health > 0:
             return True
 
+    @staticmethod
+    def color_name(txt):
+        return f"{Fore.LIGHTGREEN_EX}{txt}{Fore.YELLOW}"
+
+    @staticmethod
+    def color_val(txt):
+        return f"{Fore.LIGHTCYAN_EX}{txt}{Fore.YELLOW}"
+
     def use(self, item=None):
         if item is not None:
-            type_print(f"\n\n\t{self.name} used {item['name']}!\n" if item['sort'] == 'usable'
-                       else f"\n\t{self.name} equipped {item['name']}!\n")
+            type_print(f"\t{self.name} used {self.color_name(item['name'])}!" if item['sort'] == 'usable' else
+                       f"\t{self.name} equipped {self.color_name(item['name'])}!" if item['sort'] == 'equipable'
+                       else '')
             if item['health'] > 0:
                 self.health += item['health']
-                type_print(f"\n\t\t{self.name} gained {item['health']} health!\n")
+                print(f"\n\t\t{self.name} gained {self.color_val(item['health'])} health!")
             if item['attack'] > 0:
                 self.attack += item['attack']
-                type_print(f"\n\t\t{self.name} gained {item['attack']} attack!\n")
+                print(f"\n\t\t{self.name} gained {self.color_val(item['attack'])} attack!")
             if item['defense'] > 0:
                 self.defense += item['defense']
-                type_print(f"\n\t\t{self.name} gained {item['defense']} defense!\n")
+                print(f"\n\t\t{self.name} gained {self.color_val(item['defense'])} defense!")
             if item['power'] > 0:
                 self.level += item['power']
-                type_print(f"\n\t\t{self.name} gained {item['power']} level!\n")
+                print(f"\n\t\t{self.name} gained {self.color_val(item['power'])} level!")
 
 
 class Hero(Char):
@@ -110,8 +128,8 @@ class Hero(Char):
     This defines the hero character and adds an exp field
     """
 
-    def __init__(self, name, health, attack, defense, level, exp):
-        super().__init__(name, health, attack, defense, level)
+    def __init__(self, name, health, maxhp, attack, defense, level, exp):
+        super().__init__(name, health, maxhp, attack, defense, level)
         self._name = name
         self._exp = exp
 
@@ -127,15 +145,25 @@ class Hero(Char):
     @exp.setter
     def exp(self, delta):
         self._exp = delta
+        if self._exp >= 3000:
+            self.levelup()
+
+    def levelup(self):  # todo level up audio
+        type_print(f"{self.name} leveled up!")
+        type_print(f"{self.name}'s max HP increased by {round(self.maxhp * 1.1)}!")
+        self.exp -= 3000
+        self.maxhp += round(self.maxhp * .1)
+        self.level += 1
 
 
 class Enemy(Char):
     """ Defines Enemy properties and generates random baddies """
 
-    def __init__(self, name: str, health: int, attack: int, defense: int, level: int):
-        super().__init__(name, health, attack, defense, level)
+    def __init__(self, name: str, health: int, maxhp: int, attack: int, defense: int, level: int):
+        super().__init__(name, health, maxhp, attack, defense, level)
         self._name = name
         self._health = health
+        self._maxhp = maxhp
         self._attack = attack
         self._defense = defense
         self.level = level
@@ -155,8 +183,9 @@ def generate(player, boss=False):  # generates random enemies that hopefully sca
     if boss:
         enemy = Enemy(name="Drak'Tul",
                       health=130,
-                      attack=player.attack - randint(5, randint(7, 10)),
-                      defense=player.defense - randint(5, randint(7, 10)),
+                      maxhp=player.maxhp,
+                      attack=player.attack - randint(2, randint(3, 6)),
+                      defense=player.defense - randint(2, randint(3, 6)),
                       level=player.level + 1
                       )
         return enemy
@@ -167,9 +196,10 @@ def generate(player, boss=False):  # generates random enemies that hopefully sca
             1.2 if kind == 'Troll' else \
             1.3 if kind == 'Warlock' else 1
 
-        enemy = Enemy(name=kind[0],
-                      health=100 * mult,
-                      attack=(player.attack - randint((player.attack - 5), player.attack - 1) * mult),
-                      defense=(player.defense - randint((player.defense - 5), player.defense - 1) * mult),
+        enemy = Enemy(name=kind,
+                      health=round(player.maxhp * mult),
+                      maxhp=round(player.maxhp * mult),
+                      attack=round((player.attack - randint(5, randint(7, 10)) * mult)),
+                      defense=round((player.defense - randint(5, randint(7, 10)) * mult)),
                       level=player.level)
         return enemy

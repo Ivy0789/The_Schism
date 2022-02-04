@@ -1,8 +1,8 @@
 {
   "name":"The Great Hall" ,
-  "description": "\n\n\tGoblets and cutlery litter the floor as you make your way inside. A Great Hall! \nIt looks as though the previous occupants were in the middle of a great feast when they fled. ",
+  "description": "Goblets and cutlery litter the floor as you make your way inside. It looks as though the previous occupants left with great haste",
   "connections": {"s":2, "n":9, "w": 8},
   "enemy": 1,
   "item":["Potion", "Apple"],
-  "instruction": "\n\n\tThere are three doors here, to the North, West, and South.\n"
+  "instruction": "There are three doors here, to the North, West, and South."
 }

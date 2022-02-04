@@ -1,8 +1,8 @@
 {
   "name":"The Guardhouse" ,
-  "description": "\n\n\tYou enter a large barracks. Bunks line the walls stacked two high, still neatly made but caked in dust.",
+  "description": "You enter a large barracks. Bunks line the walls stacked two high, still neatly made but caked in dust.",
   "connections": {"e":1, "w":4, "n":12},
   "enemy": 1,
   "item": ["Boots", "Potion"],
-  "instruction": "\n\n\tTo the West is a small door. To the East lies the Culvert. \n\n\tTo the North is a dark passage\n"
+  "instruction": "There are doors to the West and East. To the North is a dark passage"
 }

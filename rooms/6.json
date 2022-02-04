@@ -1,8 +1,8 @@
 {
   "name":"The Wizard's Library",
-  "description":"\n\n\tThe air crackles with energy. Long curtains line the walls and bookshelves stretch upwards and out of sight.",
+  "description":"The air crackles with energy. Long curtains line the walls and bookshelves stretch upwards and out of sight.",
   "connections":{"s":5, "e":7},
   "enemy":1,
   "item":["Tome of Power", "Dusty Book"],
-  "instruction":"\n\n\tTo the South is the Rookery. To the East there is a large, odd looking bookshelf that seems worth examining more closely.\n"
+  "instruction":"To the South is the Rookery. To the East, a strange bookshelf seems to call you.\n"
 }

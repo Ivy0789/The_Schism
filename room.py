@@ -54,7 +54,7 @@ class Room:
 
     @property
     def name(self):
-        return Fore.LIGHTYELLOW_EX + self._name.capitalize() + Fore.YELLOW
+        return Fore.LIGHTYELLOW_EX + self._name + Fore.YELLOW
 
     @property
     def instruction(self):
