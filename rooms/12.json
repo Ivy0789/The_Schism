@@ -1,8 +1,8 @@
 {
   "name":"The Dark Passage" ,
-  "description": "\n\nYou come to a wall. It is so dark you nearly walked into it. You feel a cold breeze cut across your face.",
+  "description": "\n\n\tYou come to a wall. It is so dark you nearly walked into it. You feel a cold breeze cut across your face.",
   "connections": {"e":8, "w":5, "s": 3},
   "enemy": 0,
   "item":[],
-  "instruction": "\n\nThe wind is moving East, where the passage seems to dip a little. It comes from the West, up a steep stair.\n\nYou could turn back south.\n"
+  "instruction": "\n\n\tThe wind is moving East, where the passage seems to dip a little. It comes from the West, up a steep stair.\n\nYou could turn back South.\n"
 }

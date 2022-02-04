@@ -34,7 +34,7 @@ def call_audio(file, loop=-1):
         file: name of file
         loop: whether to loop. -1 is infinite, zero plays only once, ect. defaults to -1
     """
-    audio = mix.Sound(p.join("./audio", f"{file}.mp3"))
+    audio = mix.Sound(p.join("./audio", f"{file}.ogg"))
     audio.play(loops=loop)
 
 

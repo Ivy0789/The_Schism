@@ -60,8 +60,8 @@ def start_sequence():
     m.fadeout(5000), sleep(3), clear()
 
 
-def final_sequence():  # todo craft boss fight
-    call_audio("boss")
+def final_sequence():  # todo boss fight
+    pass
 
 
 def skip_start():

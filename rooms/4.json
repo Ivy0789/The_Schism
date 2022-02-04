@@ -1,8 +1,8 @@
 {
   "name":"The Armory" ,
-  "description":"\n\nA rack of rusty swords is tipped over on the floor and moths wreath the gambesons. \n\nMost of the armaments seem to be gone.",
+  "description":"\n\n\tA rack of rusty swords is tipped over on the floor and moths wreath the gambesons. \n\n\tMost of the armaments seem to be gone.",
   "connections":{"e":3},
   "enemy":0,
   "item":["Armor"],
-  "instruction":"\n\nIt seems to be a dead end. To the east is the guardhouse.\n"
+  "instruction":"\n\n\tIt seems to be a dead end. To the East is the guardhouse.\n"
 }

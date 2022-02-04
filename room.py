@@ -6,6 +6,8 @@ The room system is modular, simply scanning a JSON file with the room data and c
 from os import path as p
 import json
 
+from colorama import Fore
+
 
 def get_room(id):
     """
@@ -29,12 +31,12 @@ class Room:
                  enemy: bool, item: list, instruction: str
                  ):
         self.id = id
-        self.name = name
-        self.description = description
+        self._name = name
+        self._description = description
         self._connections = connections
         self.enemy = bool(enemy)
         self.item = item
-        self.instruction = instruction
+        self._instruction = instruction
 
     def connections(self, direction):
         """
@@ -49,3 +51,19 @@ class Room:
             return self._connections[direction]
         else:
             pass
+
+    @property
+    def name(self):
+        return Fore.LIGHTYELLOW_EX + self._name.capitalize() + Fore.YELLOW
+
+    @property
+    def instruction(self):
+        return self._instruction.replace(
+            'North', Fore.LIGHTYELLOW_EX + 'North' + Fore.YELLOW).replace(
+            'East', Fore.LIGHTYELLOW_EX + 'East' + Fore.YELLOW).replace(
+            'South', Fore.LIGHTYELLOW_EX + 'South' + Fore.YELLOW).replace(
+            'West', Fore.LIGHTYELLOW_EX + 'West' + Fore.YELLOW)
+
+    @property
+    def description(self):
+        return self._description

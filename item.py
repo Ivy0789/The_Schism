@@ -28,7 +28,7 @@ class Item(object):
             with open(p.join("./items/", f'{i}')) as file:
                 read = file.read()
                 load = json.loads(read)
-                load['name'] = i.replace('.json', '')
+                load['name'] = i.replace('.json', '').capitalize()
                 self._index.append(load)
 
     def __index__(self):
@@ -75,7 +75,8 @@ class Bag(Item):
             if item['sort'] == 'usable':
                 stripped.append(item)
         return [[i['name'] for i in stripped]
-                and [i, self._counter.count(i)] for i in set(self._counter) if i in [s['name'] for s in stripped]]
+                and [i, self._counter.count(i)] for i in set(self._counter)
+                if i in [s['name'] for s in stripped]]
 
     def show(self) -> dict or None:
         type_print(f'{Fore.GREEN}\n\t\tWhat would you like to use?\n'
@@ -107,10 +108,10 @@ class Bag(Item):
         """
         for ind in self._index:
             for val in item:
-                if val == ind['name']:
+                if ind['name'] == val:
                     val = ind  # sets val to values in total item index for each item.
-                    if val['name'] in [v['name'] for v in self._bag]:
+                    if val['name'] in [have['name'] for have in self._bag]:
                         self._counter.append(val['name'])
-                    if val['name'] not in [v['name'] for v in self._bag]:
+                    if val['name'] not in [have['name'] for have in self._bag]:
                         self._counter.append((val['name']))
                         self._bag.append(val)

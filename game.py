@@ -15,7 +15,7 @@ from time import sleep
 
 class Engine(cmd.Cmd):
     prompt = f'\n\n\tEnter a direction or command\n\n\t\t{Fore.RESET}'  # sets the command prompt
-    bag = Bag()  # this is also a class attribute, and is an instance of the Bag class in which the inventory resides.
+    bag = Bag()  # this is also a class attribute, and is an instance of the Bag class
     room_enemy_check = []  # these are class attributes. It is unchanged and cumulative upon each class instance
     room_item_check = []   # These track game progress and halt duplicate combat and duplicate items in rooms.
     equipped = []
@@ -23,9 +23,8 @@ class Engine(cmd.Cmd):
     def emptyline(self) -> bool:
         """
         This is a Cmd method. If a cmd line is empty (i.e. user input is empty), onecmd method defaults to this
-        method. I override emptyline here because it defaults to lastcmd method, which returns the last entered cmd.
-        Therefore, without overriding this method, if a user failed to enter args in response to prompt it would use
-        the last entered arg.
+        method. Without overriding this method, if a user failed to enter input in response to prompt it would use
+        the last entered input.
         """
         pass
 
@@ -35,9 +34,8 @@ class Engine(cmd.Cmd):
         combat to give room context rather than a simple prompt.
          """
         self.print_instruction()
-        type_print('\n\n\tType help for command list'
-                   if self.location.id not in self.room_enemy_check and self.location.id not in self.room_item_check
-                   else '')
+        if self.location.id not in self.room_enemy_check and self.location.id not in self.room_item_check:
+            type_print('\n\n\tType help for command list')
 
     def precmd(self, line: str) -> str:
         """
@@ -64,18 +62,17 @@ class Engine(cmd.Cmd):
             stop (bool): true terminates the cmdloop, false continues the execution
             line (str): the str of the last entered user input
         """
+        header = ['help', 'status']
         for item in self.bag.bag:
             if item['sort'] == 'equipable' and item['name'] not in self.equipped:
                 self.equipped.append(item['name'])
                 Combat.player.use(item)
-        if line != 'help' and line != 'status' and line != 'look':
-            type_print(f'{Fore.YELLOW}\n\tYou are in {Fore.LIGHTYELLOW_EX}{self.location.name}{Fore.YELLOW}')
-        if self.location.enemy is True \
-                and self.location.id not in self.room_enemy_check \
-                and line != 'help' and line != 'status' and line != 'look':
-            print(f'\n\n\t\t{Fore.RED}There is danger here.'
-                  f'\n\n\t\tBetter not tarry.{Fore.YELLOW}')
-            r = randint(1, 6)
+        if line not in header:
+            type_print(f'\n\tYou are in {self.location.name}')
+            self.print_instruction()
+        if self.location.enemy is True and self.location.id not in self.room_enemy_check and line not in header:
+            print(f'\n\n\t\t{Fore.RED}There is danger here.{Fore.YELLOW}')
+            r = randint(1, 6)  # adds random combat element. todo use this to make combat optional at start.
             if r == 3:
                 sleep(1)
                 self.do_fight()
@@ -90,8 +87,8 @@ class Engine(cmd.Cmd):
         super().__init__(*args, **kwargs)  # initializes Engine's super class, cmd.Cmd
         print(Fore.YELLOW)
         self.location = get_room(room)
-        self.print_description() if self.location.id not in self.room_item_check \
-            or self.location.id not in self.room_enemy_check else ''
+        if self.location.id not in self.room_item_check or self.location.id not in self.room_enemy_check:
+            self.print_description()
 
     # enablers
     def move(self, direction):
@@ -106,8 +103,8 @@ class Engine(cmd.Cmd):
             type_print("\n\tYou can't go that way! Try again or type 'help' for help!")
         else:
             self.location = get_room(new_room)
-            self.print_description() if self.location.id not in self.room_enemy_check \
-                or self.location.id not in self.room_item_check else ''
+            if self.location.id not in self.room_enemy_check or self.location.id not in self.room_item_check:
+                self.print_description()
             self.print_instruction()
 
     def print_description(self):
@@ -161,7 +158,7 @@ class Engine(cmd.Cmd):
 
     def do_search(self, *_):
         """ Search for an item """
-        sleep(.5)
+        clear()
         type_print("\n\n\t......\n\n\t", 50)
         sleep(1.3)
         if self.location.id in self.room_item_check:
@@ -181,10 +178,6 @@ class Engine(cmd.Cmd):
     def do_status(*_):
         """ Shows player status """
         print(Combat.player.__str__())
-
-    def do_look(self, *_):
-        """ Look around you """
-        self.print_instruction()
 
     def do_fight(self, *_):
         """ To Battle! """
@@ -209,9 +202,9 @@ class Engine(cmd.Cmd):
         while ent.lower() != 'see' or ent.lower() != "use":
             ent = input('\t\t\t')
             if ent.lower() == 'see':
-                type_print(f"\n\tYou have:\n\t\t|  ")
-                for key, value in self.bag.__index__():
-                    print(f"\n\t\t|  {Fore.GREEN}{key} {Fore.YELLOW}x{Fore.GREEN} {value}{Fore.YELLOW}", end='\n\t\t')
+                type_print(f"\n\tYou have:\n\t\t  ")
+                for name, count in self.bag.__index__():
+                    print(f"\n\t\t| {Fore.GREEN}{name} {Fore.YELLOW}--{Fore.GREEN} {count}{Fore.YELLOW}", end='\n\t\t')
                 print('\n\n\t')
                 break
             if ent.lower() == 'use':

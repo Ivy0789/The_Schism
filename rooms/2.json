@@ -1,8 +1,8 @@
 {
   "name": "The Storeroom" ,
-  "description": "\n\nA large storeroom greets your eye. Crates of rotting food line the dusty shelves, as if the Keep was hastily abandoned.",
+  "description": "\n\n\tA large storeroom greets your eye. Crates of rotting food line the dusty shelves, as if the Keep was hastily abandoned.",
   "connections": {"n":11, "w":1},
   "enemy": 0,
   "item": ["Salted Pork", "Potion", "Bucket of Water"],
-  "instruction": "\n\nThere is a great doorway to your north. To the East lies the Culvert.\n"
+  "instruction": "\n\n\tThere is a great doorway to your North. To the East lies the Culvert.\n"
 }
