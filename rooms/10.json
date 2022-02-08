@@ -1,8 +1,0 @@
-{
-  "name":"The Schism" ,
-  "description": "The air sounds dark around you, yet a dim blue-white light crackles from a great crevasse as though lightning itself were being restrained...",
-  "connections": {"s":8},
-  "enemy": 1,
-  "item":["Orb of Con-Creet"],
-  "instruction":"A shadow shifts. An evil laugh rings out. \n\n\t\tAre you prepared? Dare you approach?\n\t\t(South to exit)"
-}

@@ -1,8 +1,0 @@
-{
-  "name":"The Armory" ,
-  "description":"A rack of rusty swords is tipped over on the floor and moths wreath the gambesons. Most of the armaments seem to be gone.",
-  "connections":{"e":3},
-  "enemy":0,
-  "item":["Armor"],
-  "instruction":"To the East is the guardhouse."
-}

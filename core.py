@@ -16,12 +16,12 @@ def call_ascii(filename):  # art credit see char.py
     Calls ascii images from file
     :param filename: filename .txt file from ./image subdirectory 
     """
-    if filename in [i.replace('.txt', '') for i in listdir('image')]:
-        with open(p.join("./image", f"{filename}.txt"), "r") as file:
+    if filename in [i.replace('.txt', '') for i in listdir('assets/image')]:
+        with open(p.join("./assets/image", f"{filename}.txt"), "r") as file:
             for line in file:
                 print(line.rstrip())
     else:
-        with open(p.join("./image", "battle.txt"), "r") as f:
+        with open(p.join("./assets/image", "battle.txt"), "r") as f:
             for ls in f:
                 print(ls.rstrip())
 
@@ -34,7 +34,7 @@ def call_audio(file, loop=-1):
         file: name of file
         loop: whether to loop. -1 is infinite, zero plays only once, ect. defaults to -1
     """
-    audio = mix.Sound(p.join("./audio", f"{file}.ogg"))
+    audio = mix.Sound(p.join("./assets/audio", f"{file}.ogg"))
     audio.play(loops=loop)
 
 

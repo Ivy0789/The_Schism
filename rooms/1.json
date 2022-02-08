@@ -1,8 +1,0 @@
-{
-  "name":"The Culvert" ,
-  "description":"You enter the Keep through the drainage culvert. You emerge into a small chamber just beyond.",
-  "connections":{"w":3, "e":2},
-  "enemy": 0,
-  "item": ["Sword", "Potion"],
-  "instruction":"There is a steel-banded door to your East, and a door of plain wood to the West."
-}

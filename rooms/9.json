@@ -1,8 +1,0 @@
-{
-  "name":"The Shattered Tower" ,
-  "description": "The stone wall was breached here. Stone is strewn all across the hall. Something big passed through here.",
-  "connections": {"s":11},
-  "enemy": 1,
-  "item":["Palantir"],
-  "instruction": "To the South lies the Great Hall."
-}

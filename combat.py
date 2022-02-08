@@ -6,7 +6,6 @@ import math
 import time
 
 from colorama import Fore, Back, Style
-from char import Hero
 from char import generate
 from core import call_ascii
 from core import call_audio
@@ -21,23 +20,15 @@ from random import randint
 class Combat(cmd.Cmd):
     enemy_list = ['Goblin', 'Imp']
     last = 0
-    player = Hero(name="",
-                  health=100,
-                  maxhp=100,
-                  attack=10,
-                  defense=10,
-                  level=1,
-                  exp=0,
-                  )
-
     prompt = f'\n\t\t{Fore.RED}       You are in Combat!\n' \
              f'\n\t\t{Fore.GREEN}|  Attack  |  Item  |  Run  |{Fore.YELLOW}\n\n\t\t'
 
-    def __init__(self, bag, loc=None, boss=False, *args, **kwargs):
+    def __init__(self, player, bag, loc=None, boss=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.enemy = generate(self.player, boss)
+        self.enemy = generate(player, boss)
         self.loc = loc
         self._bag = bag
+        self._player = player
         clear()
         print(Fore.RED), call_ascii(self.enemy.name), print(Fore.YELLOW)
         call_audio('battle')
@@ -46,15 +37,15 @@ class Combat(cmd.Cmd):
             'intro': [
                 f"A frenzied {self.enemy.name} appeared!",
                 f"A terrifying {self.enemy.name} approaches!",
-                f"{self.player.name} found a ferocious {self.enemy.name}!",
-                f"Gah! An infelicitous {self.enemy.name} rushes toward {self.player.name}!",
+                f"{self._player.name} found a ferocious {self.enemy.name}!",
+                f"Gah! An infelicitous {self.enemy.name} rushes toward {self._player.name}!",
                 f"Oh no! A {self.enemy.name} rushes towards you!"
             ],
             'player': [
-                f"{self.player.name} attacks!",
-                f"{self.player.name} charges the enemy!",
-                f"{self.player.name} lunges forward!",
-                f"{self.player.name} rushes forward!"
+                f"{self._player.name} attacks!",
+                f"{self._player.name} charges the enemy!",
+                f"{self._player.name} lunges forward!",
+                f"{self._player.name} rushes forward!"
             ],
             'enemy': [
                 f"The {self.enemy.name} attacks!",
@@ -63,34 +54,34 @@ class Combat(cmd.Cmd):
                 f"The {self.enemy.name} angrily attacks!"
             ],
             'win': [
-                f"{self.player.name} defeated the {self.enemy.name}!",
-                f"{self.player.name} is victorious! The {self.enemy.name} is dead!",
-                f"{self.player.name} did it! {self.player.name} Won!",
-                f"{self.player.name} revels in victory over the {self.enemy.name}!"
+                f"{self._player.name} defeated the {self.enemy.name}!",
+                f"{self._player.name} is victorious! The {self.enemy.name} is dead!",
+                f"{self._player.name} did it! {self._player.name} Won!",
+                f"{self._player.name} revels in victory over the {self.enemy.name}!"
             ],
             'run': [
-                f"{self.player.name} tries to escape!",
-                f"{self.player.name} searches for an exit!",
-                f"Driven by fear, {self.player.name} prepares to run!",
-                f"{self.player.name} tries to run away!"
+                f"{self._player.name} tries to escape!",
+                f"{self._player.name} searches for an exit!",
+                f"Driven by fear, {self._player.name} prepares to run!",
+                f"{self._player.name} tries to run away!"
             ],
             'fail': [
                 f"Fail!",
                 f"Unsuccessful!",
-                f"{self.player.name} fell over instead!",
-                f"{self.player.name} completely fudged it!",
+                f"{self._player.name} fell over instead!",
+                f"{self._player.name} completely fudged it!",
                 f"So much NO just happened!"
             ],
             'success': [
                 f"Yes!",
                 f"Success!",
-                f"{self.player.name} did it!",
+                f"{self._player.name} did it!",
                 f"Excellent!",
                 f"Fabulous!",
                 f"{Back.WHITE, Fore.BLACK}So Totally Excellent!{Style.RESET_ALL}{Fore.YELLOW}"
             ],
             'item': [
-                f"{self.player.name} uses PLACEHOLDER"
+                f"{self._player.name} uses PLACEHOLDER"
             ],
             'hit': [
                 f"A hit! A fine hit!",
@@ -111,9 +102,9 @@ class Combat(cmd.Cmd):
         This is a hook method of Cmd that executes only once as the cmdloop is called. This enables the initial combat
         message to print.
         """
-        type_print(f"\n\t\tA magical portal opened and pulled you through!\n")
-        type_print(f"\n\t\t{Fore.YELLOW}{choice(self.txt['intro'])}\n")
-        print(self.player)
+        type_print(f"\tA magical portal opened and pulled you through!")
+        type_print(f"\t{Fore.YELLOW}{choice(self.txt['intro'])}")
+        print(self._player)
         print(self.enemy)
 
     def default(self, line: str) -> bool:
@@ -135,21 +126,21 @@ class Combat(cmd.Cmd):
             call_audio('win', 0)
             type_print(f"\t{choice(self.txt['win'])}")
             exp = self.gen_exp()
-            self.player.exp += exp
+            self._player.exp += exp
             self.loot()
             type_print(f'\t\tYou gained {exp} points for defeating the {self.enemy.name}!'
-                       f'\n\n\t\t You are level: {self.player.level}'
+                       f'\n\n\t\t You are level: {self._player.level}'
                        f'\n\n\t\tPress Enter to Return to {self.loc.name}....')
             call_audio('interlude')
             input("\n\n\t")
             clear()
             self.leave_combat()
-        elif not self.player.alive():
+        elif not self._player.alive():
             print("You are dead!")
             return True  # this terminates the program. todo link to lose sequence that asks 'play again?'
         else:
             clear()
-            print(self.player)
+            print(self._player)
             print(self.enemy)
 
     def leave_combat(self):
@@ -158,7 +149,7 @@ class Combat(cmd.Cmd):
         mix.fadeout(1000)
         call_audio('dungeon')
         from game import Engine
-        return Engine(bag=self._bag, room=self.loc.id).cmdloop() and False
+        return Engine(player=self._player, bag=self._bag, room=self.loc.id).cmdloop() and False
 
     def player_first(self, power):  # attack
         """
@@ -167,11 +158,11 @@ class Combat(cmd.Cmd):
             power: the power of the used move
         """
         type_print(f"\t{choice(self.txt['player'])}")
-        self.damage(self.player, self.enemy, power)
+        self.damage(self._player, self.enemy, power)
         time.sleep(.8)
         if self.enemy.alive():
             type_print(f"\t{choice(self.txt['enemy'])}")
-            self.damage(self.enemy, self.player, 100)
+            self.damage(self.enemy, self._player, 100)
         time.sleep(1.2)
 
     def enemy_first(self, power):  # attack
@@ -181,11 +172,11 @@ class Combat(cmd.Cmd):
             power: power of move being used
         """
         type_print(f"\n\t{choice(self.txt['enemy'])}\n")
-        self.damage(self.enemy, self.player, 100)
+        self.damage(self.enemy, self._player, 100)
         time.sleep(.8)
-        if self.player.alive():
+        if self._player.alive():
             type_print(f"\n\t{choice(self.txt['player'])}")
-            self.damage(self.player, self.enemy, power)
+            self.damage(self._player, self.enemy, power)
         time.sleep(1.2)
 
     def damage(self, user, target, power=100):  # attack
@@ -217,9 +208,9 @@ class Combat(cmd.Cmd):
                    )
 
     def gen_exp(self):
-        return round(((randint(350, 600) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100)
+        return round(((randint(350, 600) / math.log2(self._player.level if self._player.level > 1 else 2)) + 100)
                      if self.enemy.name in self.enemy_list else
-                     ((randint(550, 800) / math.log2(self.player.level if self.player.level > 1 else 2)) + 100))
+                     ((randint(550, 800) / math.log2(self._player.level if self._player.level > 1 else 2)) + 100))
 
     def loot(self):
         loot_table = ['Potion', 'Apple', 'Salted Pork', 'Royal Pauldrons',
@@ -284,14 +275,14 @@ class Combat(cmd.Cmd):
         type_print('\t....\n\t....'), time.sleep(1)
         if randint(0, 100) > 30:
             type_print(f"\t{choice(self.txt['success'])}")
-            type_print(f'{self.player.name} ran away!')
+            type_print(f'{self._player.name} ran away!')
             time.sleep(3)
             self.leave_combat()
         else:
             type_print(f"\t{choice(self.txt['fail'])}")
-            self.damage(self.enemy, self.player, 100)
+            self.damage(self.enemy, self._player, 100)
 
     def do_item(self, *_):
         """ Use an item! """
-        self.player.use(self._bag.show_usable())
-        self.damage(self.enemy, self.player, 100)
+        self._player.use(self._bag.show_usable())
+        self.damage(self.enemy, self._player, 100)

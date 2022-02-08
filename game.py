@@ -2,12 +2,17 @@
 This defines the game engine where the room, inventory, and combat systems are accessed.
 """
 import cmd
-import pygame.mixer
 import tabulate
+
+from char import Hero
 from colorama import Fore
 from combat import Combat
-from core import clear, type_print
+from core import clear
+from core import type_print
+from core import call_audio
+from core import call_ascii
 from item import Bag
+from pygame import mixer
 from random import randint
 from room import get_room
 from time import sleep
@@ -15,17 +20,79 @@ from time import sleep
 tabulate.PRESERVE_WHITESPACE = True
 
 
+def start_sequence():
+    """ The opening game sequence """
+    clear()
+    call_audio("opening")
+    type_print(f'{Fore.YELLOW}\n\tOh! Hello!\n\t....\n\t....'
+               f"\n\t I didn't see you there!"
+               f"\n\t....\n\t...."
+               )
+    type_print('\n\tTell me, Traveler,\n\t\tWhat is your'
+               + Fore.LIGHTBLUE_EX + ' name' + Fore.YELLOW + '?\n'
+               )
+    player_name = input()
+    sleep(1), clear()
+    type_print(f'\n\tGreetings, {player_name}, but Beware...'
+               '\n\tFor Darkness dwells within this Lair!'
+               '\n\tIf ending Darkness be thy Fight...'
+               '\n\tThen Venture forth and test your Might!\n'
+               )
+    sleep(1.2)
+    print(Fore.RED)
+    call_ascii("prepare"), sleep(.8)
+    call_ascii("to"), sleep(.8)
+    call_ascii("enter"), sleep(.8)
+    call_ascii("schism"), sleep(2)
+    type_print(Fore.BLUE + f"\n\n\t{player_name}" + Fore.YELLOW + "..."
+               + Fore.RED + "the Dark Schism " + Fore.YELLOW
+               + "is open again."
+                 "\n\tMany Travelers have perished to seal this fel chasm."
+                 '\n\tThe legacy of their efforts are strewn about the Keep.'
+                 "\n\tCollect their haunted armaments and seal the Schism for good!\n"
+               )
+    type_print('\n\tPress Enter to Continue....\t\n'), input("\n\n\t")
+    clear()
+    type_print("\n\t\tBut don't be hasty, my dear friend."
+               '\n\t\tFor more than ghosts may haunt these bends.'
+               '\n\t\tWith purpose, go, but stay your stride'
+               '\n\t\tLest you cross a stark surprise!\n'
+               )
+    sleep(3), clear()
+    type_print(f'\n\t\tHere! Take this {Fore.GREEN}Potion{Fore.YELLOW}!'
+               f'\n\t\t... Good luck on your journey, {Fore.BLUE}{player_name}{Fore.YELLOW}!\n'
+               f"\n\t\t Remember, type 'help' if you need help!\n")
+    mixer.fadeout(5000), sleep(3), clear()
+    return player_name
+
+
+def skip_start():
+    clear()
+    player_name = input('Name: ')
+    clear()
+    return player_name
+
+
 class Engine(cmd.Cmd):
     prompt = f'\n\n\tEnter a direction or command\n\n\t\t{Fore.RESET}'  # sets the command prompt
     room_enemy_check = []  # these are class attributes. It is unchanged and cumulative upon each class instance
-    room_item_check = []   # These track game progress and halt duplicate combat and duplicate items in rooms.
+    room_item_check = []  # These track game progress and halt duplicate combat and duplicate items in rooms.
     equipped = []
 
-    def __init__(self, bag=Bag(), room=1, *args, **kwargs):
+    def __init__(self,
+                 player=Hero(name=skip_start(),
+                             health=100,
+                             maxhp=100,
+                             attack=10,
+                             defense=10,
+                             level=1,
+                             exp=0),
+                 bag=Bag(), room=1, *args, **kwargs):
         super().__init__(*args, **kwargs)  # initializes Engine's super class, cmd.Cmd
         print(Fore.YELLOW)
         self.location = get_room(room)
         self._bag = bag
+        self._player = player
         if self.location.id not in self.room_item_check or self.location.id not in self.room_enemy_check:
             self.print_description()
 
@@ -42,10 +109,10 @@ class Engine(cmd.Cmd):
         This a hook method of Cmd that executes only once as the cmdloop is called. This enables the return from
         combat to give room context rather than a simple prompt.
          """
-        print(f'\n\n\tYou are in {self.location.name}')
+        type_print(f'\tYou are in {self.location.name}', 1000)
         self.print_instruction()
         if self.location.id not in self.room_enemy_check and self.location.id not in self.room_item_check:
-            type_print('\n\tType help for command list')
+            type_print('\tType help for command list')
 
     def precmd(self, line: str) -> str:
         """
@@ -76,7 +143,7 @@ class Engine(cmd.Cmd):
         for item in self._bag.bag:
             if item['sort'] == 'equipable' and item['name'] not in self.equipped:
                 self.equipped.append(item['name'])
-                Combat.player.use(item)
+                self._player.use(item)
 
         if line not in header:
             print(f'\n\tYou are in {self.location.name}')
@@ -121,7 +188,15 @@ class Engine(cmd.Cmd):
         sleep(.2)
         type_print(f'\t{self.location.instruction}', speed)
 
-    # do_ cmds - the name of each method sets the in-game command name.
+    @staticmethod
+    def blue(txt):
+        return f"{Fore.LIGHTBLUE_EX}{txt}{Fore.YELLOW}"
+
+    @staticmethod
+    def yellow(txt):
+        return f"{Fore.LIGHTYELLOW_EX}{txt}{Fore.YELLOW}"
+
+    # Action Commands - the name of each method sets the in-game command name.
     # directionals
     def do_north(self, *_):
         """ Move north """
@@ -164,7 +239,7 @@ class Engine(cmd.Cmd):
     def do_search(self, *_):
         """ Search for an item """
         clear()
-        type_print("\n\n\t......", 50)
+        type_print("\t......", 50)
         sleep(1)
         if self.location.id in self.room_item_check:
             type_print('\n\n\tYou already did that!\n')
@@ -181,24 +256,23 @@ class Engine(cmd.Cmd):
             self.room_item_check.append(self.location.id)
             self._bag.check(self.location.item)
 
-    @staticmethod
-    def do_status(*_):
+    def do_status(self, *_):
         """ Shows player status """
-        print(Combat.player.__str__())
+        print(self._player.__str__())
 
     def do_fight(self, *_):
         """ To Battle! """
         if self.location.enemy is True and self.location.id not in self.room_enemy_check:
             clear()
-            pygame.mixer.fadeout(1000)  # todo play battle intro music
+            mixer.fadeout(1000)  # todo play battle intro music
             type_print('\n\n\tYou sense something is watching you and call out a challenge...'
                        '\n\n\tSuddenly you hear an ominous swirling and feel the air crackle!')
             sleep(1.4)
             self.room_enemy_check.append(self.location.id)
             if self.location.id != 10:
-                return Combat(bag=self._bag, loc=self.location, boss=False).cmdloop() and False  # triggers random enemy
+                return Combat(player=self._player, bag=self._bag, loc=self.location, boss=False).cmdloop() and False
             else:
-                return Combat(bag=self._bag, loc=self.location, boss=True).cmdloop() and False  # triggers boss
+                return Combat(player=self._player, bag=self._bag, loc=self.location, boss=True).cmdloop() and False
         else:
             type_print(f'\n\t\t{Fore.RED}There is no battle here!{Fore.YELLOW}\n')
             clear()
@@ -212,7 +286,7 @@ class Engine(cmd.Cmd):
             ent = ent.lower()
             if ent == 'see':
                 clear()
-                type_print(f"\tYou have:\n")
+                type_print(f"\tYou have:\n\n")
                 head = ["Item Name", "Quantity", "Description", "Value\n\t"]
                 joined = []
                 for name, count in self._bag.__index__():
@@ -225,13 +299,5 @@ class Engine(cmd.Cmd):
                 break
             if ent == 'use':
                 clear()
-                Combat.player.use(self._bag.show_usable())
+                self._player.use(self._bag.show_usable())
                 break
-
-    @staticmethod
-    def blue(txt):
-        return f"{Fore.LIGHTBLUE_EX}{txt}{Fore.YELLOW}"
-
-    @staticmethod
-    def yellow(txt):
-        return f"{Fore.LIGHTYELLOW_EX}{txt}{Fore.YELLOW}"

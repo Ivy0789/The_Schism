@@ -1,8 +1,0 @@
-{
-  "name":"The Dark Passage" ,
-  "description": "You come to a wall. It is so dark you nearly walked into it. You feel a cold breeze cut across your face.",
-  "connections": {"e":8, "w":5, "s": 3},
-  "enemy": 0,
-  "item":[],
-  "instruction": "The passage slopes East. To the West is a winding stair. To the South, a soft light glimmers."
-}

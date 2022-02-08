@@ -18,7 +18,7 @@ def get_room(id):
     Returns: dictionary of values that defines the room as an instance of Room
 
     """
-    with open(p.join("./rooms/", f"{id}.json"), "r", newline='\n') as infile:
+    with open(p.join("./assets/rooms/", f"{id}.json"), "r", newline='\n') as infile:
         read = infile.read()  # reads whole file into var as byte
         load = json.loads(read)  # deserializes byte read into dict
         load['id'] = id  # specifies args as dict keys
