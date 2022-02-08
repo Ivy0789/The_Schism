@@ -25,8 +25,8 @@ class Item(object):
     _index = []  # private index imported from file
 
     def get_item(self):
-        for i in listdir("items"):
-            with open(p.join("./items/", f'{i}')) as file:
+        for i in listdir("assets/items"):
+            with open(p.join("./assets/items/", f'{i}')) as file:
                 read = file.read()
                 load = json.loads(read)
                 load['name'] = ' '.join(

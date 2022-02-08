@@ -28,7 +28,7 @@ class Char(object):
         return (f"\n\n\t{Fore.YELLOW}{self._name}'s Status:\n\n\t|\tHealth: "
                 f"{Fore.LIGHTRED_EX if self.health < self.maxhp else Fore.GREEN}{self.health}{Fore.YELLOW} / {self.maxhp}"
                 f"\t|\tAttack: {self.attack}\t|\t Defense: {self.defense}"
-                f"\t|\tLevel: {self.level}\t|\t\n\n"
+                f"\t|\tLevel: {self.level}\t|\t\n"
                 )
 
     @property
