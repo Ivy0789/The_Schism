@@ -166,7 +166,7 @@ class Hero(Char):
 
     @property
     def name(self) -> str:
-        return Fore.LIGHTBLUE_EX + self._name + Fore.YELLOW
+        return f"{Fore.LIGHTBLUE_EX}{self._name}{Fore.YELLOW}"
 
     @property
     def exp(self):
@@ -183,7 +183,7 @@ class Hero(Char):
     def level_up(self):
         increase = 10
         type_print(f"\t{self.name} leveled up!")
-        type_print(f"\t{self.name}'s max HP increased by {increase}!")
+        type_print(f"\t{self.name}'s max HP increased by {self.cyan(increase)}!")
         self.max_hp += increase
         self.level += 1
 
@@ -214,12 +214,12 @@ def generate(player, boss=False):
                   'Felhound', 'Saberclaw', 'Zombie']
     kind = random.choice(enemy_list)
     if boss:
-        enemy = Enemy(name="Drak'Tul",
+        enemy = Enemy(name="Khakaron",
                       health=player.max_hp,
                       max_hp=player.max_hp,
-                      attack=player.attack - randint(2, randint(6, 10)),
-                      defense=player.defense - randint(2, randint(6, 10)),
-                      level=player.level + 1
+                      attack=player.attack + 2,
+                      defense=player.defense,
+                      level=player.level
                       )
         return enemy
     if not boss:
@@ -231,7 +231,7 @@ def generate(player, boss=False):
         enemy = Enemy(name=kind,
                       health=round(100 * mult),
                       max_hp=round(100 * mult),
-                      attack=round(((player.attack - randint(7, 16)) * mult)),
-                      defense=round(((player.defense - randint(7, 16)) * mult)),
+                      attack=abs(round(((player.attack - randint(7, 16)) * mult))),
+                      defense=abs(round(((player.defense - randint(7, 16)) * mult))),
                       level=randint(player.level - 5, player.level))
         return enemy

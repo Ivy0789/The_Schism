@@ -4,5 +4,5 @@
   "connections":{"s":5, "e":7},
   "enemy":1,
   "item":["Tome of Power", "Dusty Book"],
-  "instruction":"To the South is the Rookery. To the East is a ledge. You jump down, but it is a one way trip.\n"
+  "instruction":"To the South is the Rookery. To the East is a ledge. You could jump down, but it is a one-way trip.\n"
 }

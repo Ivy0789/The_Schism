@@ -35,7 +35,7 @@ if __name__ == "__main__":
     Item().get_item()
     call_music()
     test_list = ["no_combat_lose.txt", "no_combat_win.txt"]
-    queue = tests(False, test_list[1])  # Mostly automated. True to test else False
+    queue = tests(True, test_list[0])  # Mostly automated. True to test else False
     print(sys.argv)
     import game
     run = game.Engine()
