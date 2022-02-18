@@ -4,78 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b4f9ece8-2db7-4bc9-ab76-d0075817029f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/the_schism.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/the_schism.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/battle.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/battleintro.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/boss.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/dungeon.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/interlude.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/lose.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/opening.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/audio/win.ogg" beforeDir="false" />
+    <list default="true" id="b4f9ece8-2db7-4bc9-ab76-d0075817029f" name="Changes" comment="1.12">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/items/dusty book.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/items/dusty book.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/items/great axe.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/items/potion.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/items/potion.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/items/salted pork.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/items/salted pork.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/rooms/10.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/rooms/10.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/rooms/6.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/rooms/6.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/rooms/7.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/rooms/7.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/char.py" beforeDir="false" afterPath="$PROJECT_DIR$/char.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/combat.py" beforeDir="false" afterPath="$PROJECT_DIR$/combat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/battle.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/enter.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/goblin.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/imp.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/prepare.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/schism.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/to.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/troll.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/warlock.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/win.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/item.py" beforeDir="false" afterPath="$PROJECT_DIR$/item.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/apple.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/armor.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/boots.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/bucket of water.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/chitinous gauntlets.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/dusty book.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/feather.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/goblin helm.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/great axe.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/light of elune.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/mithril chainmail.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/orb of con-creet.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/ornate greaves.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/palantir.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/potion.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/royal pauldrons.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/salted pork.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/sword.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/items/tome of power.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/room.py" beforeDir="false" afterPath="$PROJECT_DIR$/room.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/1.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/10.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/11.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/12.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/2.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/3.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/4.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/5.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/6.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/7.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/8.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms/9.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/seq.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/supplimentary/Basic Game Logic alpha 1.10.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/supplimentary/Basic Game Logic alpha 1.10.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supplimentary/Basic Game Logic.vsdx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/supplimentary/Full Game Logic alpha 1.10.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/supplimentary/Full Game Logic alpha 1.10.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supplimentary/Game Map.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/supplimentary/Game Map.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supplimentary/Game Map.vsdx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/supplimentary/ReadMe, Suppl..docx" beforeDir="false" afterPath="$PROJECT_DIR$/supplimentary/ReadMe, Suppl..docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/venv/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +27,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -97,6 +54,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="TODO_SCOPE" value="All Places" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -137,6 +95,21 @@
       <option name="presentableId" value="Default" />
       <updated>1644344914907</updated>
     </task>
+    <task id="LOCAL-00001" summary="1.12">
+      <created>1644356329330</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1644356329330</updated>
+    </task>
+    <task id="LOCAL-00002" summary="1.12">
+      <created>1644356372987</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1644356372987</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -144,10 +117,34 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="alpha_1.2_experimental" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="1.12" />
+    <option name="LAST_COMMIT_MESSAGE" value="1.12" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="return self._health + item['health'] - 100" />
+        <watch expression="(self._health + item[&quot;health&quot;]) &lt;= 100:" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

@@ -1,8 +1,8 @@
 {
   "name":"The Secret Passage" ,
-  "description":"You make your way down the strange passage. The hidden door swings shut behind you.",
+  "description":"You leap down and make your way through the strange passage.",
   "connections":{"e":10},
   "enemy":1,
   "item": ["Chitinous Gauntlets", "Potion"],
-  "instruction":"The way is shut. You must go East."
+  "instruction":"The way back is shut. You must go East."
 }
