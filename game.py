@@ -247,6 +247,7 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
             if r == 3:
                 sleep(1)
                 self.do_fight()
+        return False
 
     def victory_conditions_no_combat(self):
         """ Manages victory conditions without combat """

@@ -46,8 +46,6 @@ def call_music(command='', loop=-1):
         mix.music.play(loops=loop)
 
 
-
-
 def type_print(text: str, speed: int = 250) -> print:
     """
     Slow typing function

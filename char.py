@@ -149,7 +149,6 @@ class Char(object):
             return 'exit'
 
 
-
 class Hero(Char):
     """
     This defines the hero character and adds an exp field
@@ -181,7 +180,7 @@ class Hero(Char):
             self._exp -= 1500
             self.level_up()
 
-    def level_up(self):  # todo health doubling on level
+    def level_up(self):
         increase = 10
         type_print(f"\t{self.name} leveled up!")
         type_print(f"\t{self.name}'s max HP increased by {increase}!")
