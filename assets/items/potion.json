@@ -1,6 +1,6 @@
 {
     "name" : "Potion",
-    "health" : 20,
+    "health" : 50,
     "attack" : 0,
     "defense" : 0,
     "power" : 0,

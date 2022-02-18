@@ -4,7 +4,7 @@
     "attack" : 0,
     "defense" : 3,
     "power" : 0,
-    "description" : "A strudy piece of plate armor. It should serve you well.",
+    "description" : "A sturdy piece of plate armor. It should serve you well.",
     "value" : 50,
     "sort" : "equipable"
 }

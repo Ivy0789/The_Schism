@@ -6,5 +6,5 @@
     "power" : 0,
     "description" : "A dusty old tome",
     "value" : 10,
-    "sort" : "equipable"
+    "sort" : "usable"
 }

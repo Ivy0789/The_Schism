@@ -16,19 +16,20 @@ class Char(object):
     balance is achieved. See the readme for details on the attack formula and random enemy generator
     """
 
-    def __init__(self, name: str, health: int, maxhp: int, attack: int, defense: int, level: int) -> None:
+    def __init__(self, name: str, health: int, max_hp: int, attack: int, defense: int, level: int) -> None:
         self._name = name
         self._health = health
-        self._maxhp = maxhp
+        self._max_hp = max_hp
         self._attack = attack
         self._defense = defense
         self._level = level
 
     def __str__(self):
-        return (f"\n\n\t{Fore.YELLOW}{self._name}'s Status:\n\n\t|\tHealth: "
-                f"{Fore.LIGHTRED_EX if self.health < self.maxhp else Fore.GREEN}{self.health}{Fore.YELLOW} / {self.maxhp}"
-                f"\t|\tAttack: {self.attack}\t|\t Defense: {self.defense}"
-                f"\t|\tLevel: {self.level}\t|\t\n\n"
+        return (
+            f"\n\n\t{Fore.YELLOW}{self.name}'s Status:\n\n\t|\tHealth: "
+            f"{self.health_color(self.health)} / {self.cyan(self.max_hp)}"
+            f"\t|\tAttack: {self.cyan(self.attack)}\t|\t Defense: {self.cyan(self.defense)}"
+            f"\t|\tLevel: {self.cyan(self.level)}\t|\t\n"
                 )
 
     @property
@@ -48,18 +49,18 @@ class Char(object):
 
     @health.setter
     def health(self, delta):
-        """ Sets and limits value of health by the min of max hp, max of healing sources."""
+        """ Sets health attribute and checks max """
         self._health = delta
-        if self._health > self._maxhp:
-            self._health = self._maxhp
+        if self._health > self._max_hp:
+            self._health = self._max_hp
 
     @property
-    def maxhp(self):
-        return self._maxhp
+    def max_hp(self):
+        return self._max_hp
 
-    @maxhp.setter
-    def maxhp(self, delta):
-        self._maxhp = delta
+    @max_hp.setter
+    def max_hp(self, delta):
+        self._max_hp = delta
 
     @property
     def attack(self) -> int:  # attack start
@@ -70,6 +71,8 @@ class Char(object):
     def attack(self, delta):
         """ sets attack """
         self._attack = delta
+        if self._attack <= 0:
+            self._attack = 1
 
     @property
     def defense(self) -> int:  # defense start
@@ -80,6 +83,8 @@ class Char(object):
     def defense(self, delta):
         """ sets defense"""
         self._defense = delta
+        if self._defense <= 0:
+            self._defense = 1
 
     @property
     def level(self) -> int:  # level start
@@ -90,6 +95,8 @@ class Char(object):
     def level(self, delta):
         """ sets level to change """
         self._level = delta
+        if self._level <= 0:
+            self._level = 1
 
     def alive(self) -> bool:
         """ Checks if caller is alive """
@@ -97,30 +104,49 @@ class Char(object):
             return True
 
     @staticmethod
-    def color_name(txt):
+    def green(txt):
         return f"{Fore.LIGHTGREEN_EX}{txt}{Fore.YELLOW}"
 
     @staticmethod
-    def color_val(txt):
+    def cyan(txt):
         return f"{Fore.LIGHTCYAN_EX}{txt}{Fore.YELLOW}"
+
+    def health_color(self, txt):
+        return f"{Fore.LIGHTRED_EX if self.health < self.max_hp else Fore.LIGHTCYAN_EX}{txt}{Fore.YELLOW}"
+
+    def healing(self, item):
+        if (self._health + item["health"]) <= self._max_hp:
+            return item["health"]
+        else:
+            return self._max_hp - self._health
 
     def use(self, item=None):
         if item is not None:
-            type_print(f"\t{self.name} used {self.color_name(item['name'])}!" if item['sort'] == 'usable' else
-                       f"\t{self.name} equipped {self.color_name(item['name'])}!" if item['sort'] == 'equipable'
+            type_print(f"\t{self.name} used {self.green(item['name'])}!" if item['sort'] == 'usable' else
+                       f"\t{self.name} equipped {self.green(item['name'])}!" if item['sort'] == 'equipable'
                        else '')
             if item['health'] > 0:
+                print(f"\n\n\t\t{self.name} gained {self.cyan(self.healing(item))} health!")
                 self.health += item['health']
-                print(f"\n\t\t{self.name} gained {self.color_val(item['health'])} health!")
             if item['attack'] > 0:
                 self.attack += item['attack']
-                print(f"\n\t\t{self.name} gained {self.color_val(item['attack'])} attack!")
+                print(f"\n\n\t\t{self.name} gained {self.cyan(item['attack'])} attack!")
             if item['defense'] > 0:
                 self.defense += item['defense']
-                print(f"\n\t\t{self.name} gained {self.color_val(item['defense'])} defense!")
+                print(f"\n\n\t\t{self.name} gained {self.cyan(item['defense'])} defense!")
             if item['power'] > 0:
                 self.level += item['power']
-                print(f"\n\t\t{self.name} gained {self.color_val(item['power'])} level!")
+                increase = round(10 * item['power'])
+                type_print(f"\t{self.name} leveled up!")
+                type_print(f"\t{self.name}'s max HP increased by {increase}!")
+                self.max_hp += increase
+                self.health += increase
+            if item['health'] == 0 and item['attack'] == 0 and item['defense'] == 0 and item['power'] == 0:
+                print(f"\n\n\t\t{self.green(item['name'])} did nothing! Why does it exist?! Why?!!")
+
+            return True
+        else:
+            return 'exit'
 
 
 class Hero(Char):
@@ -128,10 +154,15 @@ class Hero(Char):
     This defines the hero character and adds an exp field
     """
 
-    def __init__(self, name, health, maxhp, attack, defense, level, exp):
-        super().__init__(name, health, maxhp, attack, defense, level)
+    def __init__(self, name, health, max_hp, attack, defense, level, exp, combat=True):
+        super().__init__(name, health, max_hp, attack, defense, level)
         self._name = name
         self._exp = exp
+        self._combat = combat
+
+    @property
+    def combat(self):
+        return self._combat
 
     @property
     def name(self) -> str:
@@ -145,25 +176,26 @@ class Hero(Char):
     @exp.setter
     def exp(self, delta):
         self._exp = delta
-        if self._exp >= 3000:
-            self.levelup()
+        if self._exp >= 1500:
+            self._exp -= 1500
+            self.level_up()
 
-    def levelup(self):  # todo level up audio
-        type_print(f"{self.name} leveled up!")
-        type_print(f"{self.name}'s max HP increased by {round(self.maxhp * 1.1)}!")
-        self.exp -= 3000
-        self.maxhp += round(self.maxhp * .1)
+    def level_up(self):
+        increase = 10
+        type_print(f"\t{self.name} leveled up!")
+        type_print(f"\t{self.name}'s max HP increased by {increase}!")
+        self.max_hp += increase
         self.level += 1
 
 
 class Enemy(Char):
     """ Defines Enemy properties and generates random baddies """
 
-    def __init__(self, name: str, health: int, maxhp: int, attack: int, defense: int, level: int):
-        super().__init__(name, health, maxhp, attack, defense, level)
+    def __init__(self, name: str, health: int, max_hp: int, attack: int, defense: int, level: int):
+        super().__init__(name, health, max_hp, attack, defense, level)
         self._name = name
         self._health = health
-        self._maxhp = maxhp
+        self._max_hp = max_hp
         self._attack = attack
         self._defense = defense
         self.level = level
@@ -176,30 +208,30 @@ class Enemy(Char):
         return f'\n\t\tThe {self.name} has {Fore.LIGHTRED_EX}{self.health}{Fore.YELLOW} health remaining!'
 
 
-def generate(player, boss=False):  # generates random enemies that hopefully scale based on player stats
+def generate(player, boss=False):
+    """ Generates random enemies that have some semblance of scaling to player stats """
     enemy_list = ['Goblin', 'Troll', 'Imp', 'Warlock',
                   'Felhound', 'Saberclaw', 'Zombie']
     kind = random.choice(enemy_list)
     if boss:
         enemy = Enemy(name="Drak'Tul",
-                      health=130,
-                      maxhp=player.maxhp,
-                      attack=player.attack - randint(2, randint(3, 6)),
-                      defense=player.defense - randint(2, randint(3, 6)),
+                      health=player.max_hp,
+                      max_hp=player.max_hp,
+                      attack=player.attack - randint(2, randint(6, 10)),
+                      defense=player.defense - randint(2, randint(6, 10)),
                       level=player.level + 1
                       )
         return enemy
     if not boss:
-        mult = .8 if kind == 'Goblin' else \
+        mult = .6 if kind == 'Goblin' else \
             .7 if kind == 'Imp' else \
-            .9 if kind == 'Zombie' else \
-            1.2 if kind == 'Troll' else \
-            1.3 if kind == 'Warlock' else 1
+            .7 if kind == 'Zombie' else \
+            1.1 if kind == 'Warlock' else 1
 
         enemy = Enemy(name=kind,
-                      health=round(player.maxhp * mult),
-                      maxhp=round(player.maxhp * mult),
-                      attack=round((player.attack - randint(5, randint(7, 10)) * mult)),
-                      defense=round((player.defense - randint(5, randint(7, 10)) * mult)),
-                      level=player.level)
+                      health=round(100 * mult),
+                      max_hp=round(100 * mult),
+                      attack=round(((player.attack - randint(7, 16)) * mult)),
+                      defense=round(((player.defense - randint(7, 16)) * mult)),
+                      level=randint(player.level - 5, player.level))
         return enemy

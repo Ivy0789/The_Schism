@@ -4,5 +4,5 @@
   "connections": {"s":8},
   "enemy": 1,
   "item":["Orb of Con-Creet"],
-  "instruction":"A shadow shifts. An evil laugh rings out. \n\n\t\tAre you prepared? Dare you approach?\n\t\t(South to exit)"
+  "instruction":"A shadow shifts. An evil laugh rings out. \n\n\t\tAre you prepared? Dare you approach?\n\t\t"
 }

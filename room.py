@@ -15,14 +15,14 @@ def get_room(id):
     Args:
         id: the id of the room passed from the Engine move method, which mirrors the name of the json file
 
-    Returns: dictionary of values that defines the room as an instance of Room
+    Returns: instance of Room class
 
     """
-    with open(p.join("./rooms/", f"{id}.json"), "r", newline='\n') as infile:
+    with open(p.join("assets", "rooms", f"{id}.json"), "r", newline='\n') as infile:
         read = infile.read()  # reads whole file into var as byte
         load = json.loads(read)  # deserializes byte read into dict
-        load['id'] = id  # specifies args as dict keys
-        room_dict = Room(**load)  # ** passes through all kwargs of load.
+        load['id'] = id  # specifies id as dict key
+        room_dict = Room(**load)  # passes kwargs from load to Room class, instantiating a new Room object
     return room_dict
 
 
@@ -42,9 +42,9 @@ class Room:
         """
 
         Args:
-            direction:
+            direction: checks passed input ('n', 'e', 's', 'w') against connections of currently loaded room.
 
-        Returns: None
+        Returns: the new room ID if checked input finds a match, otherwise nothing.
 
         """
         if direction in self._connections:
@@ -58,6 +58,7 @@ class Room:
 
     @property
     def instruction(self):
+        """ returns a reformatted instruction value when instruction is called (turns text yellow) """
         return self._instruction.replace(
             'North', Fore.LIGHTYELLOW_EX + 'North' + Fore.YELLOW).replace(
             'East', Fore.LIGHTYELLOW_EX + 'East' + Fore.YELLOW).replace(

@@ -1,13 +1,13 @@
 """
-This is the game initializer.
+This initializes all necessary dependencies when game starts,
+sets cmd window parameters, then begins the cmdloop
 """
 # Begin of Command Loop
 import os
+import colorama
 import pygame
-from core import call_audio, clear
-from game import Engine
+from core import call_music
 from item import Item
-from seq import skip_start
 
 if __name__ == "__main__":
     cmd_size = 'mode 150, 50'
@@ -21,9 +21,9 @@ if __name__ == "__main__":
         devicename=None,
         allowedchanges=0
     )  # initializes the sound module
+    colorama.init()
     Item().get_item()
-    skip_start()
-    call_audio("dungeon")
-    clear()
-    run = Engine()
+    import game
+    call_music()
+    run = game.Engine()
     run.cmdloop()
