@@ -4,7 +4,6 @@ This file defines game combat
 import cmd
 import math
 import time
-import game
 
 from colorama import Fore, Back, Style
 from char import generate
@@ -34,6 +33,7 @@ class Combat(cmd.Cmd):
         self._bag = bag
         self._player = player
         self._equipped = equipped
+        self._boss = boss
         clear()
         print(Fore.RED), call_ascii(self.enemy.name), print(Fore.YELLOW)
         time.sleep(1.6)
@@ -56,6 +56,12 @@ class Combat(cmd.Cmd):
                 f"The {self.enemy.name} charges forward, enraged!",
                 f"The {self.enemy.name} lashes out!",
                 f"The {self.enemy.name} attacks angrily!"
+            ],
+            'boss': [
+                f"{self.enemy.name} attacks!",
+                f"{self.enemy.name} charges forward, enraged!",
+                f"{self.enemy.name} lashes out!",
+                f"{self.enemy.name} attacks angrily!"
             ],
             'win': [
                 f"{self._player.name} defeated the {self.enemy.name}!",
@@ -107,7 +113,8 @@ class Combat(cmd.Cmd):
         message to print.
         """
         type_print(f"\tA magical portal opened and pulled you through!")
-        type_print(f"\t{Fore.YELLOW}{choice(self.txt['intro'])}")
+        type_print(f"\t{Fore.YELLOW}{choice(self.txt['intro'])}") if not self._boss \
+            else type_print(f"\t{self.enemy.name} rises from the shadows, eyes ablaze with fel fire!")
         print(self._player)
         print(self.enemy)
 
@@ -116,42 +123,51 @@ class Combat(cmd.Cmd):
         This is a Cmd method that determines what message prints if the prompt entered does not match a command
         """
         clear()
-        print("Not a valid move!")
+        print(self.red("\tNot a valid move!"))
         return False
 
     def precmd(self, line: str) -> str:
         """ This is a hook method of Cmd that executes immediately after input but before command dispatch. """
         print(Fore.YELLOW)
-        if self.enemy.name == 'Imp' or self.enemy.name == 'Warlock':
-            immolate = randint(1, 5)
+        if self._boss:
+            immolate = randint(5, 15)
             self._player.health -= immolate
-            type_print(f"{self._player.name} took {self.red(immolate)} damage from {self.enemy.name}'s Immolate!")
+            type_print(f"\t{self._player.name} took {self.red(immolate)} damage from {self.enemy.name}'s Immolate!")
         return line
 
     def postcmd(self, stop: bool, line: str) -> bool:
         """ Handles life check, exp, and exit conditions each loop """
-        if not self.enemy.alive():  # checks if enemy is alive and generates exp gain
+        if not self.enemy.alive():
             mix.fadeout(1000)
-            call_audio('win', 0)
             type_print(f"\t{choice(self.txt['win'])}")
-            exp = self.gen_exp()
-            self._player.exp += exp
-            self.loot()
-            time.sleep(1.8)
-            call_audio('interlude')
-            type_print(f'\t\tYou gained {exp} experience points for defeating the {self.enemy.name}!'
-                       f'\n\n\t\tYou have {self._player.exp}/1500 experience points!'
-                       f'\n\n\t\tYou are level: {self._player.level}'
-                       f'\n\n\t\tPress Enter to Return to {self.loc.name}....')
-            input("\n\n\t")
-            clear()
-            self.leave_combat()
+            if not self._boss:
+                call_audio('win', 0)
+                exp = self.gen_exp()
+                self._player.exp += exp
+                self.loot()
+                time.sleep(1.8)
+                call_audio('interlude')
+                type_print(f'\t\tYou gained {exp} experience points for defeating the {self.enemy.name}!'
+                           f'\n\n\t\tYou have {self._player.exp}/1500 experience points!'
+                           f'\n\n\t\tYou are level: {self._player.level}'
+                           f'\n\n\t\tPress Enter to Return to {self.loc.name}....')
+                input("\n\n\t")
+                clear()
+                self.leave_combat()
+            else:
+                del self.enemy
+                from game import victory
+                victory(self._player)
+                return True
         elif not self._player.alive():
-            game.game_over()
-            return True  # this terminates the program. It is a redundancy, just in case.
+            type_print('\tYou have died!')
+            from game import game_over
+            game_over()
+            return True
         else:
             print(self._player)
             print(self.enemy)
+            return False
 
     def leave_combat(self):
         """ This exits the combat module and returns the cmdloop to the Engine """
@@ -172,8 +188,9 @@ class Combat(cmd.Cmd):
         type_print(f"\t{choice(self.txt['player'])}")
         self.damage(self._player, self.enemy, power)
         time.sleep(.8)
+        boss_name = "Khakaron"
         if self.enemy.alive():
-            type_print(f"\t{choice(self.txt['enemy'])}")
+            type_print(f"\t{choice((self.txt['enemy']) if self.enemy.name != boss_name else (self.txt['boss']))}")
             self.damage(self.enemy, self._player, 100)
         time.sleep(1.5)
         clear()
@@ -207,15 +224,18 @@ class Combat(cmd.Cmd):
         dmg = (round(
             (((((2 * user.level) / 5) + 2) * (power * (user.attack / target.defense)) / 50) + 2)
             * (randint(100, 200) / 100)
-            * (randint(100, 120) / 100))) + 2
-        if self.rand_check() > 8:
-            if user == self._player:
+            * (randint(100, 120) / 100))) + 5
+        hit = self.hit_check()
+        if hit > 8:
+            if user.name == self._player.name:
                 dmg += sum([i['attack'] for i in self._equipped])
+                time.sleep(1)
             else:
                 dmg -= round((sum(i['defense'] for i in self._equipped)) * .15)
-            target.health -= dmg
+                dmg += self.enemy.attack if self.enemy.attack <= 10 else randint(6, 9)
         else:
             dmg = 0
+        target.health -= dmg
         type_print('\t.........')
         time.sleep(.8)
         type_print(f"\t{choice(self.txt['miss'])}" if dmg <= 0 else f"\t{choice(self.txt['hit'])}")
@@ -244,10 +264,10 @@ class Combat(cmd.Cmd):
                 )
                 self._bag.check(loot)
 
-    def rand_check(self):
+    def hit_check(self):
         """ This ensures two misses should not occur in a row. """
         hit = randint(1, 100)
-        while hit in range(self.last - 10, self.last + 10):
+        if hit in range(self.last - 8, self.last + 8):
             hit = randint(10, 100)
         self.last = hit
         return hit

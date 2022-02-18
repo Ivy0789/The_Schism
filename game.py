@@ -2,6 +2,8 @@
 This defines the game engine where the room, inventory, and combat systems are accessed.
 """
 import cmd
+import subprocess
+import sys
 import tabulate
 
 from char import Hero
@@ -26,6 +28,7 @@ tabulate.PRESERVE_WHITESPACE = True
 def start_sequence():
     """ The opening game sequence """
     clear()
+    call_music('pause')
     call_audio("opening")
     sleep(1.1)
     type_print(f"{Fore.YELLOW}\n\t....\n\t....", 150)
@@ -48,7 +51,7 @@ def start_sequence():
     type_print(f'\n\tGreetings, {player_name}, but Beware...'
                f'\n\tFor Darkness dwells within this Lair!'
                f'\n\tIf ending Darkness be thy Fight...'
-               f'\n\tThen Venture forth and test your Might!\n', 150
+               f'\n\tThen Venture forth and test thy Might!\n', 150
                )
     sleep(2.2)
     clear()
@@ -79,22 +82,30 @@ def start_sequence():
                f'\n\t\t... Good luck on your journey, {player_name}!\n'
                f"\n\t\t Remember, type 'help' if you need help!\n", 150)
     mixer.fadeout(5000), sleep(3), clear()
+    call_music()
     return player_name
 
 
 def skip_start():
     """ Provides option to skip intro """
     clear()
-    entry = check('Would you like to skip the start sequence? y/n')
-    player_name = input('\tPlease input you name: ') if entry == 'y' else start_sequence()
+    if len(sys.argv) <= 1:
+        type_print("\tWelcome to The Schism! You can jump right in and skip the introduction if you'd like!")
+        entry = check('Would you like to skip the introduction? y/n')
+        player_name = input('\tPlease input you name: ') if entry == 'y' else start_sequence()
+    else:
+        player_name = sys.argv[1]
     return player_name
 
 
 def combat_check():
     """ Checks whether the player wants to play with combat enabled, thereby changing victory conditions """
-    type_print("\tOh! One more thing...")
-    combat = check("Would you like to play with combat? y/n")
-    combat = True if combat == 'y' else False
+    if len(sys.argv) <= 1:
+        type_print("\tOh! One more thing...")
+        combat = check("Would you like to play with combat? y/n")
+        combat = True if combat == 'y' else False
+    else:
+        combat = sys.argv[2]
     clear()
     type_print("\tLoading...", 100)
     return combat
@@ -103,15 +114,23 @@ def combat_check():
 def game_over():
     """ Game lost sequence """
     mixer.fadeout(1000)
+    call_music('pause')
     call_audio("lose")
+    type_print("\tKhakaron's dark army will wreak havoc over the lands!")
     type_print("\tYou lose!")
     sleep(2)
     entry = check()
     if entry == 'n':
         type_print("\tThanks for playing!")
+        print(Fore.RESET)
+        sleep(1)
+        sys.stdout.flush()
         quit()
     else:
-        Engine().cmdloop()
+        call_music('pause')
+        mixer.fadeout(1000)
+        sys.stdout.flush()
+        subprocess.call([sys.executable, path.realpath('main.py')])
 
 
 def victory(player):
@@ -119,28 +138,41 @@ def victory(player):
     Victory sequence when player achieves whatever conditions are applicable to their gameplay selection (combat/not)
     """
     mixer.fadeout(1000)
+    call_music('pause')
     call_audio("win", 0)
     if player.combat:
         type_print(f"\tCongratulations {player.name}!"
-                   f"\n\n\tYou defeated Drak'Tul!")
+                   f"\n\n\tYou defeated Khakaron!")
         type_print('\tThe land is safe from his wicked Darkness and the Schism has been sealed for good!')
         type_print('\tWe are forever in your debt!')
     else:
         type_print("\tYou collected all the items!")
         type_print("\tYou won! Consider trying again, on a harder difficulty!")
+    sleep(2)
+    call_audio("interlude")
     entry = check()
-    type_print("\tThanks for playing!") if entry == 'n' else Engine().cmdloop()  # fixme restart entire program from scratch
+    if entry == 'n':
+        type_print("\tThanks for playing!")
+        sleep(2)
+        print(Fore.RESET)
+        sys.stdout.flush()
+        quit()
+    else:
+        call_music('pause')
+        mixer.fadeout(1000)
+        sys.stdout.flush()
+        subprocess.call([sys.executable, path.realpath('main.py')])
 
 
 def check(prompt='Would you like to play again? Enter Yes or No.'):
     entry = ""
     while entry != 'y' and entry != 'n':
         entry = input(f"\n\n\t{prompt}\n\n\t")
-        entry = entry[0].strip().lower()
+        entry = entry[0].strip().lower() if entry else ""
     return entry
 
 
-class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence() after debug
+class Engine(cmd.Cmd):
     prompt = '\n\n\tEnter a direction or command\n\n\t\t'  # sets the command prompt
     room_enemy_check = []  # these are class attributes. It is unchanged and cumulative upon each class instance
     room_item_check = [10, 12]  # these track game progress and halt duplicate combat and duplicate items in rooms.
@@ -149,7 +181,7 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
                  player=Hero(name=skip_start(),
                              health=100,
                              max_hp=100,
-                             attack=10,
+                             attack=1000,
                              defense=10,
                              level=1,
                              exp=0,
@@ -201,7 +233,7 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
             if choice == 'y':
                 return line.lower()
             else:
-                type_print('\tBetter to makes sure you are prepared!')
+                type_print('\tBetter to make sure you are prepared!')
                 clear()
                 line = ""
                 return line.lower()
@@ -256,7 +288,6 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
             victory(self._player)
         if self.location.id == 10 and sorted(self.room_item_check) != sorted(room_list) and not self._player.combat:
             type_print("\tYou failed to collect the all of the items!")
-            type_print("\tDrak'Tul's shadow army will wreak havoc over the lands!")
             game_over()
 
         return False
@@ -293,13 +324,13 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
         if self.location.id not in self.room_item_check:
             if self._player.combat:
                 if self.location.id not in self.room_enemy_check:
-                    self.print_description()
+                    self.print_description(300)
                 else:
-                    type_print("\tYou have done battle here.")
+                    type_print(self.red("\tYou have done battle here."))
             else:
-                self.print_description()
+                self.print_description(300)
         else:
-            if self.location.id != 12:
+            if self.location.id != 12 and self.location.id != 10:
                 type_print(self.yellow("\tYou have looted this room."))
             if self._player.combat:
                 if self.location.id in self.room_enemy_check:
@@ -382,7 +413,8 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
         type_print("\t.....\n"*2, 50)
         sleep(.8)
         clear()
-        if self.location.id in self.room_item_check:
+        room_items = [e for e in self.room_item_check if e != 10 and e != 12]
+        if self.location.id in room_items:
             type_print('\tYou already did that!')
             sleep(.5)
             clear()
@@ -409,7 +441,7 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
                 and self._player.combat:
             clear()
             call_music(command='pause')
-            call_audio('battle')
+            call_audio('battle') if self.location.id != 10 else call_audio('boss')
             type_print('\n\n\tYou sense something is watching you and call out a challenge...'
                        '\n\n\tSuddenly you hear an ominous swirling and the air begins to crackle!')
             sleep(1.6)
@@ -465,5 +497,3 @@ class Engine(cmd.Cmd):  # todo change name=skip_start() to name=start_sequence()
                         break
             if ent == 'exit':
                 break
-
-
