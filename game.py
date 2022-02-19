@@ -1,4 +1,5 @@
 """
+Courtney C. Robb
 This defines the game engine where the room, inventory, and combat systems are accessed.
 """
 import cmd
@@ -184,7 +185,7 @@ class Engine(cmd.Cmd):
                      name=skip_start(),
                      health=100,
                      max_hp=100,
-                     attack=1000,
+                     attack=10,
                      defense=10,
                      level=1,
                      exp=0,
