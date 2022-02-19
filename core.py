@@ -39,7 +39,7 @@ def call_audio(file, loop=-1):
 
 
 def call_music(command='', loop=-1):
-    mix.music.load(p.join('assets', 'audio', f'dungeon.ogg'))
+    mix.music.load(p.join('assets', 'audio', 'dungeon.ogg'))
     if command == 'pause':
         mix.music.pause()
     else:

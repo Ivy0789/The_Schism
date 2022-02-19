@@ -36,7 +36,6 @@ if __name__ == "__main__":
     call_music()
     test_list = ["no_combat_lose.txt", "no_combat_win.txt"]
     queue = tests(True, test_list[1])  # Mostly automated. True to test else False
-    print(sys.argv)
     import game
     run = game.Engine()
     run.cmdqueue = queue
