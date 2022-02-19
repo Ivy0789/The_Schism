@@ -115,6 +115,7 @@ class Char(object):
         return f"{Fore.LIGHTRED_EX if self.health < self.max_hp else Fore.LIGHTCYAN_EX}{txt}{Fore.YELLOW}"
 
     def healing(self, item):
+        """ determines the amount healed relative to player max-hp """
         if (self._health + item["health"]) <= self._max_hp:
             return item["health"]
         else:
@@ -122,8 +123,8 @@ class Char(object):
 
     def use(self, item=None):
         if item is not None:
-            type_print(f"\t{self.name} used {self.green(item['name'])}!" if item['sort'] == 'usable' else
-                       f"\t{self.name} equipped {self.green(item['name'])}!" if item['sort'] == 'equipable'
+            type_print(f"\t{self.name} used {self.green(item['name'])}!" if item['sort'] == 'usable'
+                       else f"\t{self.name} equipped {self.green(item['name'])}!" if item['sort'] == 'equipable'
                        else '')
             if item['health'] > 0:
                 print(f"\n\n\t\t{self.name} gained {self.cyan(self.healing(item))} health!")
@@ -143,7 +144,6 @@ class Char(object):
                 self.health += increase
             if item['health'] == 0 and item['attack'] == 0 and item['defense'] == 0 and item['power'] == 0:
                 print(f"\n\n\t\t{self.green(item['name'])} did nothing! Why does it exist?! Why?!!")
-
             return True
         else:
             return 'exit'
@@ -214,12 +214,13 @@ def generate(player, boss=False):
                   'Felhound', 'Saberclaw', 'Zombie']
     kind = random.choice(enemy_list)
     if boss:
-        enemy = Enemy(name="Khakaron",
-                      health=player.max_hp,
-                      max_hp=player.max_hp,
-                      attack=player.attack + 2,
-                      defense=player.defense,
-                      level=player.level
+        enemy = Enemy(
+            name="Khakaron",
+            health=player.max_hp,
+            max_hp=player.max_hp,
+            attack=player.attack + 2,
+            defense=player.defense,
+            level=player.level
                       )
         return enemy
     if not boss:
@@ -228,10 +229,12 @@ def generate(player, boss=False):
             .7 if kind == 'Zombie' else \
             1.1 if kind == 'Warlock' else 1
 
-        enemy = Enemy(name=kind,
-                      health=round(100 * mult),
-                      max_hp=round(100 * mult),
-                      attack=abs(round(((player.attack - randint(7, 16)) * mult))),
-                      defense=abs(round(((player.defense - randint(7, 16)) * mult))),
-                      level=randint(player.level - 5, player.level))
+        enemy = Enemy(
+            name=kind,
+            health=round(100 * mult),
+            max_hp=round(100 * mult),
+            attack=abs(round(((player.attack - randint(7, 16)) * mult))),
+            defense=abs(round(((player.defense - randint(7, 16)) * mult))),
+            level=randint(player.level - 5, player.level)
+                      )
         return enemy

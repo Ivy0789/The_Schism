@@ -1,14 +1,14 @@
 """
 This file holds basic game functions utilized throughout the modules
 """
-from os import path as p
+from os import path
 from os import listdir
-from pygame import mixer as mix
-from random import random as r
-from sys import stdout as st
-from time import sleep as s
-from os import system as sys
-from os import name as nm
+from pygame import mixer
+from random import random
+from sys import stdout
+from time import sleep
+from os import system
+from os import name
 
 
 def call_ascii(filename):  # art credit see char.py
@@ -16,12 +16,12 @@ def call_ascii(filename):  # art credit see char.py
     Calls ascii images from file
     :param filename: filename .txt file from ./image subdirectory 
     """
-    if filename in [i.replace('.txt', '') for i in listdir(p.join('assets', 'image'))]:
-        with open(p.join("assets", "image", f"{filename}.txt"), "r") as file:
+    if filename in [i.replace('.txt', '') for i in listdir(path.join('assets', 'image'))]:
+        with open(path.join("assets", "image", f"{filename}.txt"), "r") as file:
             for line in file:
                 print(line.rstrip())
     else:
-        with open(p.join("assets", "image", "battle.txt"), "r") as f:
+        with open(path.join("assets", "image", "battle.txt"), "r") as f:
             for ls in f:
                 print(ls.rstrip())
 
@@ -34,16 +34,16 @@ def call_audio(file, loop=-1):
         file: name of file
         loop: whether to loop. -1 is infinite, zero plays only once, ect. defaults to -1
     """
-    audio = mix.Sound(p.join("assets", "audio", f"{file}.ogg"))
+    audio = mixer.Sound(path.join("assets", "audio", f"{file}.ogg"))
     audio.play(loops=loop)
 
 
 def call_music(command='', loop=-1):
-    mix.music.load(p.join('assets', 'audio', 'dungeon.ogg'))
+    mixer.music.load(path.join('assets', 'audio', 'dungeon.ogg'))
     if command == 'pause':
-        mix.music.pause()
+        mixer.music.pause()
     else:
-        mix.music.play(loops=loop)
+        mixer.music.play(loops=loop)
 
 
 def type_print(text: str, speed: int = 250) -> print:
@@ -54,14 +54,14 @@ def type_print(text: str, speed: int = 250) -> print:
     """
     print("\n\n\t\t")
     for letter in text:
-        st.writelines(letter)
-        st.flush()
-        s(r() * 10.0 / speed)
+        stdout.writelines(letter)
+        stdout.flush()
+        sleep(random() * 10.0 / speed)
 
 
 def clear():  # defines clear screen for lin or win sys.
     """ Clears the screen """
-    if nm == 'nt':
-        _ = sys('cls')
+    if name == 'nt':
+        _ = system('cls')
     else:
-        _ = sys('clear')
+        _ = system('clear')

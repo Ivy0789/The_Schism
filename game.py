@@ -4,6 +4,8 @@ This defines the game engine where the room, inventory, and combat systems are a
 import cmd
 import subprocess
 import sys
+
+import colorama
 import tabulate
 
 from char import Hero
@@ -122,7 +124,7 @@ def game_over():
     entry = check()
     if entry == 'n':
         type_print("\tThanks for playing!")
-        print(Fore.RESET)
+        print(colorama.Style.RESET_ALL)
         sleep(1)
         sys.stdout.flush()
         quit()
@@ -154,7 +156,7 @@ def victory(player):
     if entry == 'n':
         type_print("\tThanks for playing!")
         sleep(2)
-        print(Fore.RESET)
+        mixer.fadeout(1000)
         sys.stdout.flush()
         quit()
     else:
@@ -178,15 +180,21 @@ class Engine(cmd.Cmd):
     room_item_check = [10, 12]  # these track game progress and halt duplicate combat and duplicate items in rooms.
 
     def __init__(self,
-                 player=Hero(name=skip_start(),
-                             health=100,
-                             max_hp=100,
-                             attack=1000,
-                             defense=10,
-                             level=1,
-                             exp=0,
-                             combat=combat_check()),
-                 bag=Bag(), room=1, equipped=None, *args, **kwargs):
+                 player=Hero(
+                     name=skip_start(),
+                     health=100,
+                     max_hp=100,
+                     attack=1000,
+                     defense=10,
+                     level=1,
+                     exp=0,
+                     combat=combat_check()
+                            ),
+                 bag=Bag(),
+                 room=1,
+                 equipped=None,
+                 *args,
+                 **kwargs):
         super().__init__(*args, **kwargs)  # initializes Engine's super class, cmd.Cmd
         if equipped is None:
             equipped = []
@@ -229,8 +237,8 @@ class Engine(cmd.Cmd):
         """
         print(Fore.YELLOW)
         if self.location.id == 6 and line.lower() == 'east' and not self._player.combat:
-            choice = check("\tAre you sure? There is no going back. (Yes/No)")
-            if choice == 'y':
+            player_choice = check("\tAre you sure? There is no going back. (Yes/No)")
+            if player_choice == 'y':
                 return line.lower()
             else:
                 type_print('\tBetter to make sure you are prepared!')
@@ -270,9 +278,10 @@ class Engine(cmd.Cmd):
             type_print(f'\tYou are in {self.location.name}', 2000)
             self.print_instruction(1000)
 
-        if self.location.enemy and \
-                self.location.id not in self.room_enemy_check and \
-                line not in header and self._player.combat:
+        if self.location.enemy \
+                and self.location.id not in self.room_enemy_check \
+                and line not in header \
+                and self._player.combat:
             # sets random encounter for most action methods.
             type_print(f"\t\t{self.red('There is danger here.')}", 1000)
             r = randint(1, 6)
@@ -284,12 +293,15 @@ class Engine(cmd.Cmd):
     def victory_conditions_no_combat(self):
         """ Manages victory conditions without combat """
         room_list = [int(i.replace('.json', '')) for i in listdir(path.join("assets", "rooms"))]
-        if self.location.id == 10 and sorted(self.room_item_check) == sorted(room_list) and not self._player.combat:
+        if self.location.id == 10 \
+                and sorted(self.room_item_check) == sorted(room_list) \
+                and not self._player.combat:
             victory(self._player)
-        if self.location.id == 10 and sorted(self.room_item_check) != sorted(room_list) and not self._player.combat:
+        if self.location.id == 10 \
+                and sorted(self.room_item_check) != sorted(room_list) \
+                and not self._player.combat:
             type_print("\tYou failed to collect the all of the items!")
             game_over()
-
         return False
 
     def default(self, line: str) -> bool:
@@ -404,7 +416,7 @@ class Engine(cmd.Cmd):
         type_print(self.yellow('\tThanks for playing!'))
         sleep(2)
         clear()
-        print(Fore.RESET)
+        print(colorama.Style.RESET_ALL)
         quit()
 
     def do_search(self, *_):
@@ -447,17 +459,19 @@ class Engine(cmd.Cmd):
             sleep(1.6)
             self.room_enemy_check.append(int(self.location.id))
             if self.location.id != 10:
-                return Combat(player=self._player,
-                              bag=self._bag,
-                              loc=self.location,
-                              boss=False,
-                              equipped=self._equipped).cmdloop() and False
+                return Combat(
+                    player=self._player,
+                    bag=self._bag,
+                    loc=self.location,
+                    boss=False,
+                    equipped=self._equipped).cmdloop() and False
             else:
-                return Combat(player=self._player,
-                              bag=self._bag,
-                              loc=self.location,
-                              boss=True,
-                              equipped=self._equipped).cmdloop() and False
+                return Combat(
+                    player=self._player,
+                    bag=self._bag,
+                    loc=self.location,
+                    boss=True,
+                    equipped=self._equipped).cmdloop() and False
         else:
             type_print(f'\t{Fore.RED}There is no battle here!{Fore.YELLOW}') if self._player.combat \
                 else type_print(f'\t{Fore.RED}Combat is disabled!{Fore.YELLOW}')
@@ -467,33 +481,44 @@ class Engine(cmd.Cmd):
     def do_bag(self, *_):
         """ See your Bag or use and Item """
         clear()
-        ent = ""
+        player_choice = ""
         type_print(f"\t{self.blue('See or Use?')}")
-        while ent != 'see' or ent != "use":
-            ent = input('\n\t')
-            ent = ent.lower()
-            if ent == 'see':
+        while player_choice != 'see' or player_choice != "use":
+            player_choice = input('\n\t')
+            player_choice = player_choice.lower()
+            if player_choice == 'see':
                 clear()
                 type_print(f"\tYou have:\n\n")
                 head = ["Item Name", "Quantity", "Description", "Value\n\t"]
-                joined = []
+                player_inventory = []
                 for name, count in self._bag.__index__():
                     for item in self._bag.bag:
                         if item['name'] == name:
-                            joined.append(['\t', self.blue(name), self.blue(count),
-                                           self.yellow(item['description']), self.yellow(item['value'])])
-                print('\t' + tabulate.tabulate(joined, headers=head, numalign="center",
-                                               stralign="center", tablefmt='plain'))
+                            player_inventory.append([
+                                '\t',
+                                self.blue(name),
+                                self.blue(count),
+                                self.yellow(item['description']),
+                                self.yellow(item['value'])
+                            ])
+                print('\t'
+                      + tabulate.tabulate(
+                        player_inventory,
+                        headers=head,
+                        numalign="center",
+                        stralign="center",
+                        tablefmt='plain')
+                      )
                 break
-            if ent == 'use':
+            if player_choice == 'use':
                 clear()
                 t = True
                 while t:
-                    condition = self._player.use(self._bag.show_usable())
-                    if condition != "exit":
+                    item_selection = self._player.use(self._bag.show_usable())
+                    if item_selection != "exit":
                         t = True
                     else:
-                        ent = 'exit'
+                        player_choice = 'exit'
                         break
-            if ent == 'exit':
+            if player_choice == 'exit':
                 break

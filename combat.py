@@ -12,7 +12,7 @@ from core import call_audio
 from core import call_music
 from core import clear
 from core import type_print
-from pygame import mixer as mix
+from pygame import mixer
 from random import choice
 from random import choices
 from random import randint
@@ -138,7 +138,7 @@ class Combat(cmd.Cmd):
     def postcmd(self, stop: bool, line: str) -> bool:
         """ Handles life check, exp, and exit conditions each loop """
         if not self.enemy.alive():
-            mix.fadeout(1000)
+            mixer.fadeout(1000)
             type_print(f"\t{choice(self.txt['win'])}")
             if not self._boss:
                 call_audio('win', 0)
@@ -147,10 +147,12 @@ class Combat(cmd.Cmd):
                 self.loot()
                 time.sleep(1.8)
                 call_audio('interlude')
-                type_print(f'\t\tYou gained {exp} experience points for defeating the {self.enemy.name}!'
-                           f'\n\n\t\tYou have {self._player.exp}/1500 experience points!'
-                           f'\n\n\t\tYou are level: {self._player.level}'
-                           f'\n\n\t\tPress Enter to Return to {self.loc.name}....')
+                type_print(
+                    f'\t\tYou gained {exp} experience points for defeating the {self.enemy.name}!'
+                    f'\n\n\t\tYou have {self._player.exp}/1500 experience points!'
+                    f'\n\n\t\tYou are level: {self._player.level}'
+                    f'\n\n\t\tPress Enter to Return to {self.loc.name}....'
+                )
                 input("\n\n\t")
                 clear()
                 self.leave_combat()
@@ -174,7 +176,7 @@ class Combat(cmd.Cmd):
         del self.enemy
         type_print("\tTraveling....")
         time.sleep(1)
-        mix.fadeout(1000)
+        mixer.fadeout(1000)
         call_music()
         from game import Engine
         return Engine(player=self._player, bag=self._bag, room=self.loc.id, equipped=self._equipped).cmdloop() and False
@@ -229,7 +231,6 @@ class Combat(cmd.Cmd):
         if hit > 8:
             if user.name == self._player.name:
                 dmg += sum([i['attack'] for i in self._equipped])
-                time.sleep(1)
             else:
                 dmg -= round((sum(i['defense'] for i in self._equipped)) * .15)
                 dmg += self.enemy.attack if self.enemy.attack <= 10 else randint(6, 9)

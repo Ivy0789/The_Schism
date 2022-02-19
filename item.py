@@ -38,8 +38,8 @@ class Item(object):
                 self._index.append(load)
 
     def __index__(self):
-        val = [item for item in self._index]
-        return val
+        item_index = [item for item in self._index]
+        return item_index
 
 
 class Bag(Item):
@@ -77,20 +77,23 @@ class Bag(Item):
         for item in self._bag:
             if item['sort'] == 'usable' and item['name'] in self._counter:
                 item.update({'count': self._counter.count(item['name'])})
-                stripped.append(['\t',
-                                 self.yellow(item["name"]),
-                                 self.yellow(item['count']),
-                                 self.blue(item['description'])
+                stripped.append([
+                    '\t',
+                    self.yellow(item["name"]),
+                    self.yellow(item['count']),
+                    self.blue(item['description'])
                                  ])
         return stripped
 
     def show_usable(self) -> dict or None:
         """ Shows only usable items when called """
-        print(f'\n\t\tWhat would you like to use?\n'
-              f'\n\t\tSimply type the item name!\n'
-              f'\n\t\tType Exit to exit!\n\n')
-        head = ['Item Name', 'Quantity', 'Description\n\t']
-        print('\t' + tabulate.tabulate(self.counter, headers=head, numalign='center',
+        print(
+            f'\n\t\tWhat would you like to use?\n'
+            f'\n\t\tSimply type the item name!\n'
+            f'\n\t\tType Exit to exit!\n\n'
+        )
+        header = ['Item Name', 'Quantity', 'Description\n\t']
+        print('\t' + tabulate.tabulate(self.counter, headers=header, numalign='center',
                                        stralign='center', tablefmt='plain'))
         selection = ""
         while selection not in self._counter:
